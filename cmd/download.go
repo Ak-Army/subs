@@ -38,6 +38,7 @@ func (d *Download) Parse(args []string) error {
 	d.path = d.FlagSet.Args()
 	return nil
 }
+
 func (d *Download) Desc() string {
 	return "Download subtitles."
 }
@@ -68,7 +69,21 @@ func (d *Download) Run() {
 		if err != nil {
 			d.log.Error(err)
 		}
-		d.log.Debug(files)
+		d.log.Debug("Files: ", files)
+
+		fileParser := internal.FileParser{
+			FilenamePatterns:             d.config.FilenamePatterns,
+			SeriesnameYearPattern:        d.config.SeriesnameYearPattern,
+			ExtraInfoPattern:             d.config.ExtraInfoPattern,
+			SeriesnameReplacements:       d.config.SeriesnameReplacements,
+			ReleasegroupInfoReplacements: d.config.ReleasegroupInfoReplacements,
+			ExtraInfoReplacements:        d.config.ExtraInfoReplacements,
+			ExtensionPattern:             d.config.ExtensionPattern,
+			EpisodeNumber:                d.config.EpisodeNumber,
+		}
+		fileParser.Parse(files, d.log)
+
+		d.log.Debug("ParsedFiles: ", files)
 	}
 }
 

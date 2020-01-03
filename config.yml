@@ -93,7 +93,7 @@ filename_blacklist:
 # ezt "foo.eng.srt" erre bontja  "foo" es ".eng.srt".
 extension_pattern: "(\\.[a-zA-Z0-9]+)$"
 # Ha a sorozat cime is szerepelne a fajl neveben akkor azt ki kell torolni.
-extra_info_pattern: "^(.*(?=720p|720i|1080p|1080i)|.*(?=HDTV|WEBRip|DVDRip|WEBDL|TVRip))(?P<extra>.*)$"
+extra_info_pattern: "^(?P<extra>.*(720p|720i|1080p|1080i)|.*(HDTV|WEBRip|DVDRip|WEBDL|TVRip))$"
 
 # Seasonpack kezelese:
 valid_subextensions:
@@ -387,4 +387,4 @@ language_sub: "HU"
 subtitle_extension: "srt"
 
 # Az epizod sorszama mindig 2 karakteres legyen
-episode_number: "%02d"
+episode_number: "%02s"
