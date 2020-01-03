@@ -1,9 +1,13 @@
 github.com/Ak-Army/cli v0.0.0-20181030184137-ad28b9e423d9 h1:6eYMmKfEosgJG3Duh1vDj9QAOWeWIbgACFa7bKKMHOM=
 github.com/Ak-Army/cli v0.0.0-20181030184137-ad28b9e423d9/go.mod h1:M2M+KnD+qrnna75MHrxeoCXX0BN+AXuk0OYYKgP/L68=
+github.com/Ak-Army/gox v0.3.0 h1:QFPUOz2JZODY/+t6doNV6Rj95kAI4HRcrlLrxlImKtk=
+github.com/Ak-Army/gox v0.3.0/go.mod h1:awAfmBhkKAAhguwkn7twZ1M4+Az14mdAds08KPwkQiM=
 github.com/Ak-Army/xlog v1.0.2 h1:8QQyI/xynatMWm0BZ6TpoeoCwguCzRAVKCyVrJcyzVA=
 github.com/Ak-Army/xlog v1.0.2/go.mod h1:DJ+tVHmSxxtJtJtX4ZWqTO4eacsFrFnDKoAjrpvVOkw=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/mitchellh/iochan v1.0.0 h1:C+X3KsSTLFVBr/tK1eYN/vs4rJcvsiLU338UhYPJWeY=
+github.com/mitchellh/iochan v1.0.0/go.mod h1:JwYml1nuB7xOzsp52dPpHFffvOCDupsG0QubkSMEySY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rs/xid v1.2.1 h1:mhH9Nq+C1fY2l1XIpgxIiUOfNpRBYH1kKcr+qfKgjRc=
