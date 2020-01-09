@@ -100,7 +100,7 @@ valid_subextensions:
   - "srt"
 
 dl_season: false
-recursive: true
+recursive: false
 
 dir_pattern: "[^\\/]+(?=\\/$|$)"
 

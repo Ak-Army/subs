@@ -25,13 +25,13 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 		}
 		return files, nil
 	}
-	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		if !ff.Recursive && f.IsDir() {
+	filepath.Walk(path, func(p string, f os.FileInfo, err error) error {
+		if p != path && !ff.Recursive && f.IsDir() {
 			return filepath.SkipDir
 		}
 		check := ff.check(f.Name())
 		if check {
-			files = append(files, path)
+			files = append(files, p)
 		}
 
 		return nil

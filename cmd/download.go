@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/Ak-Army/subs/internal/downloader"
 	"log"
 	"os"
 	"path"
@@ -79,13 +80,23 @@ func (d *Download) Run() {
 			ExtraInfoReplacements:        d.config.ExtraInfoReplacements,
 			ExtensionPattern:             d.config.ExtensionPattern,
 			EpisodeNumber:                d.config.EpisodeNumber,
+			Logger:                       d.log,
 		}
-		seriesParams := fileParser.Parse(files, d.log)
-
+		seriesParams := fileParser.Parse(files)
+		for _, s := range seriesParams {
+			dl := &downloader.Feliratok{
+				SeriesParams: s,
+				Logger:       d.log,
+			}
+			err := dl.Download(d.config.Language)
+			if err != nil {
+				d.log.Error(err)
+			}
+		}
 		// subtitle_search(result, year, seasonnumber, episodenumbers, extrainfo, releasegroup, re.sub(Config["extension_pattern"], "", filename), onlypath, fullpath)
 
-		d.log.Debug("Series params: ", seriesParams)
 	}
+
 }
 
 func (d *Download) Samples() []string {

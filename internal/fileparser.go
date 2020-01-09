@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"regexp"
 
 	"github.com/Ak-Army/xlog"
@@ -20,14 +21,17 @@ type FileParser struct {
 	ExtraInfoReplacements        []*Replacements
 	ExtensionPattern             string
 	EpisodeNumber                string
+	Logger                       xlog.Logger
 }
 
 type SeriesParams struct {
+	Path          string
 	Name          string
 	SeasonNumber  string
 	EpisodeNumber string
 	ExtraInfo     string
 	ReleaseGroup  string
+	Year          string
 }
 
 const QuickUrlTvmaze string = "http://api.tvmaze.com/singlesearch/shows?q="
@@ -52,24 +56,25 @@ func init() {
 	}
 }
 
-func (fp FileParser) Parse(files []string, log xlog.Logger) []*SeriesParams {
+func (fp FileParser) Parse(files []string) []*SeriesParams {
 	var ret []*SeriesParams
 	var patterns []*regexp.Regexp
 	for _, p := range fp.FilenamePatterns {
 		re, err := regexp.Compile(p)
 		if err != nil {
-			log.Error("Invalid filename pattern ", p, err)
+			fp.Logger.Error("Invalid filename pattern ", p, err)
 		}
 		patterns = append(patterns, re)
 
 	}
-	for _, f := range files {
+	for _, path := range files {
+		f := filepath.Base(path)
 		for _, p := range patterns {
 			if namedGroups := fp.matchWithGroup(p, f); len(namedGroups) > 0 {
-				log.Info("# Processing file: ", f)
+				fp.Logger.Info("# Processing file: ", f)
 				episodeNumber := fp.episodeNumber(namedGroups)
 				if episodeNumber == "" {
-					log.Warn("# Regex does not contain episode number group, should"+
+					fp.Logger.Warn("# Regex does not contain episode number group, should"+
 						"contain episodenumber, episodenumber1-9, or"+
 						"episodenumberstart and episodenumberend# Pattern"+
 						"was: ", p.String())
@@ -78,33 +83,38 @@ func (fp FileParser) Parse(files []string, log xlog.Logger) []*SeriesParams {
 
 				seriesName, year := fp.seriesName(namedGroups)
 				if seriesName == "" {
-					log.Warn("# # Regex must contain seriesname. Pattern was: ", p.String())
+					fp.Logger.Warn("# # Regex must contain seriesname. Pattern was: ", p.String())
 					break
 				}
 				seasonNumber := fp.seasonNumber(namedGroups)
 				extraInfo := fp.extraInfo(namedGroups)
 				releaseGroup := fp.releaseGroup(namedGroups)
-				if realName, err := fp.checkTvMaze(seriesName); err != nil {
-					log.Info("Start set sub: ", realName, extraInfo, releaseGroup)
+				if realName, err := fp.checkTvMaze(seriesName); err == nil {
+					fp.Logger.Info("Start set sub: ", realName, " ", extraInfo, " ", releaseGroup)
 					ret = append(ret, &SeriesParams{
+						Path:          filepath.Dir(path),
 						Name:          realName,
 						SeasonNumber:  seasonNumber,
 						EpisodeNumber: episodeNumber,
 						ExtraInfo:     extraInfo,
 						ReleaseGroup:  releaseGroup,
+						Year:          year,
 					})
-				} else if realName, err := fp.checkTvDB(seriesName); err != nil {
-					log.Info("Start set sub: ", realName, extraInfo, releaseGroup)
+				} else if realName, err := fp.checkTvDB(seriesName); err == nil {
+					fp.Logger.Info("Start set sub: ", realName, extraInfo, releaseGroup)
 					ret = append(ret, &SeriesParams{
+						Path:          filepath.Dir(path),
 						Name:          realName,
 						SeasonNumber:  seasonNumber,
 						EpisodeNumber: episodeNumber,
 						ExtraInfo:     extraInfo,
 						ReleaseGroup:  releaseGroup,
+						Year:          year,
 					})
 				} else {
-					log.Infof("# Not found on www.tvmaze.com and thetvdb.com: %s %s %sx%s", seriesName, year, seasonNumber, episodeNumber)
+					fp.Logger.Infof("# Not found on www.tvmaze.com and thetvdb.com: %s %s %sx%s", seriesName, year, seasonNumber, episodeNumber)
 				}
+				break
 			}
 		}
 	}
@@ -114,9 +124,9 @@ func (fp FileParser) Parse(files []string, log xlog.Logger) []*SeriesParams {
 func (fp FileParser) episodeNumber(namedgroups map[string]string) string {
 	if v, ok := namedgroups["episodenumberstart"]; ok {
 		// Multiple episodes, regex specifies start and end number
-		return fmt.Sprint(fp.EpisodeNumber+"-"+fp.EpisodeNumber, v, namedgroups["episodenumberend"])
+		return fmt.Sprintf(fp.EpisodeNumber+"-"+fp.EpisodeNumber, v, namedgroups["episodenumberend"])
 	} else if v, ok := namedgroups["episodenumber"]; ok {
-		return fmt.Sprint(fp.EpisodeNumber, v)
+		return fmt.Sprintf(fp.EpisodeNumber, v)
 	}
 	return ""
 }
@@ -199,30 +209,35 @@ func (fp FileParser) extraInfo(namedgroups map[string]string) string {
 }
 
 func (fp FileParser) checkTvMaze(name string) (string, error) {
-	url.QueryEscape(name)
-	resp, err := http.DefaultClient.Get(QuickUrlTvmaze + url.QueryEscape(name))
+	fp.Logger.Debug("checkTvMaze", QuickUrlTvmaze+url.QueryEscape(name))
+	res, err := http.DefaultClient.Get(QuickUrlTvmaze + url.QueryEscape(name))
 	if err != nil {
 		return "", err
 	}
+	if res.StatusCode < 200 || res.StatusCode >= 400 {
+		return "", fmt.Errorf("not found")
+	}
+	fp.Logger.Debug("response", res.Body)
 	result := &struct {
 		RealName string `json:"name"`
 	}{}
-	jsonReader := json.NewDecoder(resp.Body)
+	jsonReader := json.NewDecoder(res.Body)
 	if err := jsonReader.Decode(result); err != nil {
 		return "", err
 	}
 	return result.RealName, nil
 }
 func (fp FileParser) checkTvDB(name string) (string, error) {
-	url.QueryEscape(name)
-	resp, err := http.DefaultClient.Get(QuickUrlTvdb + url.QueryEscape(name))
+	fp.Logger.Debug("checkTvDB", QuickUrlTvdb+url.QueryEscape(name))
+	res, err := http.DefaultClient.Get(QuickUrlTvdb + url.QueryEscape(name))
 	if err != nil {
 		return "", err
 	}
+	fp.Logger.Debug("response", res.Body)
 	result := &struct {
 		RealName string `xml:"Data>Series>SeriesName"`
 	}{}
-	jsonReader := xml.NewDecoder(resp.Body)
+	jsonReader := xml.NewDecoder(res.Body)
 	if err := jsonReader.Decode(result); err != nil {
 		return "", err
 	}
