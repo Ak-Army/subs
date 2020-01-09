@@ -1,4 +1,4 @@
-valid_extensions: 
+valid_extensions:
 - ".avi"
 - ".mkv"
 - ".mp4"
@@ -22,70 +22,70 @@ dl_hosszupuskasub: true
 
 # Miutan szetbontottuk a fajl nevet akkor ezeket a dolgokat csereljuk a kulonbozo reszekben.
 extra_info_replacements:
-- replacement: ""
-  match: "[hH][eE][vV][cC][. ]26[45]"
-  is_regex: true
-- replacement: ""
-  match: "[xXhH](.?| ?)26[45]"
-  is_regex: true
-- replacement: ""
-  match: "(AAC|DD)[+][25][. ][01]"
-  is_regex: true
-- replacement: ""
-  match: "[xX][vV][iI][dD]"
-  is_regex: true
-- replacement: ""
-  match: "READNFO"
-  is_regex: true
-- replacement: ""
-  match: "[aA][mM][zZ][nN]"
-  is_regex: true
-- replacement: ""
-  match: "[hH][bB][oO]"
-  is_regex: true
-- replacement: "720p"
-  match: "720[pP][. ][hH][dD][tT][vV]"
-  is_regex: true
-- replacement: "1080p"
-  match: "1080[pP][. ][hH][dD][tT][vV]"
-  is_regex: true
-- replacement: "720p"
-  match: "720[pP]([. ]*|)[wW][eE][bB][rR][iI][pP]|720[pP]([. ]*|)[wW][eE][bB]-[dD][lL]|720[pP]([. ]*|)[wW]eE[bB]"
-  is_regex: true
-- replacement: ""
-  match: " "
-  is_regex: true
+  - replacement: ""
+    match: "[hH][eE][vV][cC][. ]26[45]"
+    is_regex: true
+  - replacement: ""
+    match: "[xXhH](.?| ?)26[45]"
+    is_regex: true
+  - replacement: ""
+    match: "(AAC|DD)[+][25][. ][01]"
+    is_regex: true
+  - replacement: ""
+    match: "[xX][vV][iI][dD]"
+    is_regex: true
+  - replacement: ""
+    match: "READNFO"
+    is_regex: true
+  - replacement: ""
+    match: "[aA][mM][zZ][nN]"
+    is_regex: true
+  - replacement: ""
+    match: "[hH][bB][oO]"
+    is_regex: true
+  - replacement: "720p"
+    match: "720[pP][. ][hH][dD][tT][vV]"
+    is_regex: true
+  - replacement: "1080p"
+    match: "1080[pP][. ][hH][dD][tT][vV]"
+    is_regex: true
+  - replacement: "720p"
+    match: "720[pP]([. ]*|)[wW][eE][bB][rR][iI][pP]|720[pP]([. ]*|)[wW][eE][bB]-[dD][lL]|720[pP]([. ]*|)[wW]eE[bB]"
+    is_regex: true
+  - replacement: ""
+    match: " "
+    is_regex: true
 
 releasegroup_info_replacements:
-- replacement: ""
-  match: "[(\\[].*[)\\]]"
-  is_regex: true
-- replacement: ""
-  match: "[tT][bB][sS]"
-  is_regex: true
+  - replacement: ""
+    match: "[(\\[].*[)\\]]"
+    is_regex: true
+  - replacement: ""
+    match: "[tT][bB][sS]"
+    is_regex: true
 
 seriesname_replacements:
-# A The Bridge sorozat miatt kell hogy a US vegzodest toroljuk mert nem ismeri fel a sorozatos oldal
-- replacement: ""
-  match: " [Uu][Ss]"
-  is_regex: true
-# Ha elrontanak a fajl nevet es a sorozat neveben bennemaradnak akkor ezeket torolni kell.
-- replacement: ""
-  match: "[pP][rR][oO][pP][eE][rR]"
-  is_regex: true
-- replacement: ""
-  match: "[rR][eE][pP][aA][cC][kK]"
-  is_regex: true
+  # A The Bridge sorozat miatt kell hogy a US vegzodest toroljuk mert nem ismeri fel a sorozatos oldal
+  - replacement: ""
+    match: " [Uu][Ss]"
+    is_regex: true
+  # Ha elrontanak a fajl nevet es a sorozat neveben bennemaradnak akkor ezeket torolni kell.
+  - replacement: ""
+    match: "[pP][rR][oO][pP][eE][rR]"
+    is_regex: true
+  - replacement: ""
+    match: "[rR][eE][pP][aA][cC][kK]"
+    is_regex: true
 
 
 # Ha nem ures akkor az itt megadott infok alapjan tiltunk fajl neveket, pelda:
 # [{is_regex: true, match: ".*sample.*"}, {is_regex: false, match: "sample"}]
 filename_blacklist:
-- is_regex: true
-  match: ".*sample.*"
-- is_regex: true
-  match: ".*[.-][hH][uU][nN][.-].*"
-  full_path: true
+  - is_regex: true
+    match: ".*sample.*"
+  - is_regex: true
+    match: ".*[.-][hH][uU][nN][.-].*"
+    full_path: true
 
 
 # A kiterjeszteseknel neha el kell tavolitani a nyelvet erre valo ez, pelda:
@@ -97,281 +97,37 @@ extra_info_pattern: "^(?P<extra>.*(720p|720i|1080p|1080i)|.*(HDTV|WEBRip|DVDRip|
 
 # Seasonpack kezelese:
 valid_subextensions:
-- "srt"
+  - "srt"
 
 dl_season: false
-dl_recursive: true
+recursive: true
 
 dir_pattern: "[^\\/]+(?=\\/$|$)"
 
-seasonpack_pattern: "^((?P<seriesname>.+?)[ \\._\\-])?\\[?[Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?((?P<extrainfo>.+?)((?<![. _-])|-(?P<releasegroup>[^-]+)))$"
-
-seasonfile_patterns:
-  # foo.s01e23e24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    [Ss](?P<seasonnumber>[0-9]+) # s01
-    [\\.\\- ]?  # elvalaszto
-    [Ee](?P<episodenumberstart>[0-9]+) # elso resz sorszama e23
-    ([\\.\\- ]?  # elvalaszto
-    [Ee][0-9]+)* # e24e25 stb
-    [\\.\\- ]?[Ee](?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
-  # foo.1x23x24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    (?P<seasonnumber>[0-9]+) # 1
-    [xX](?P<episodenumberstart>[0-9]+) # elso resz sorszama x23
-    ([xX][0-9]+)* # x24x25 stb
-    [xX](?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
-  # foo.s01e23-24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    [Ss](?P<seasonnumber>[0-9]+) # s01
-    [\\.\\- ]?  # elvalaszto
-    [Ee](?P<episodenumberstart>[0-9]+) # elso resz sorszama e23
-    ( # -24 stb
-         [\\-]
-         [Ee]?[0-9]+
-    )*
-         [\\-] # elvalaszto
-         [Ee]?(?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
-  # foo.1x23-24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    (?P<seasonnumber>[0-9]+) # 1
-    [xX](?P<episodenumberstart>[0-9]+) # elso resz sorszama x23
-    ( # -24 stb
-         [\\-+][0-9]+
-    )*
-         [\\-+] # elvalaszto
-         (?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
-  # foo.1x09*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?
-    \\[?
-    (?P<seasonnumber>[0-9]+)
-    [xX]
-    (?P<episodenumber>[0-9]+)
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
-  # foo.s01.e01, foo.s01_e01, "foo.s01 - e01"
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?
-    \\[?
-    [Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?
-    [Ee]?(?P<episodenumber>[0-9]+)
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
-  # foo.103*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{1})
-    (?P<episodenumber>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
-  # foo.0103*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{2})
-    (?P<episodenumber>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
-  # foo.10304*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{1})
-    (?P<episodenumberstart>[0-9]{2})
-    (?P<episodenumberend>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
-  # show.name.e123.abc
-- "
-    ^(?P<seriesname>.+?)  # sorozat neve
-    [ \\._\\-] # elvalaszto
-    [Ee](?P<episodenumber>[0-9]+) # E123
-    ((?P<extrainfo>.+?)
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+seasonpack_pattern: "^((?P<seriesname>.+?)[ \\._\\-])?\\[?[Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+)))$"
 
 # Fajlok szetbontasa talalhato itt:
 filename_patterns:
   # foo.s01e23e24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    [Ss](?P<seasonnumber>[0-9]+) # s01
-    [\\.\\- ]?  # elvalaszto
-    [Ee](?P<episodenumberstart>[0-9]+) # elso resz sorszama e23
-    ([\\.\\- ]?  # elvalaszto
-    [Ee][0-9]+)* # e24e25 stb
-    [\\.\\- ]?[Ee](?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ((?<![. _-])- # elvalaszto
-    (?P<releasegroup>[^-]+)) # kiado csoport
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?[Ss](?P<seasonnumber>[0-9]+)[\\.\\- ]?[Ee](?P<episodenumberstart>[0-9]+)([\\.\\- ]?[Ee][0-9]+)*[\\.\\- ]?[Ee](?P<episodenumberend>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.1x23x24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    (?P<seasonnumber>[0-9]+) # 1
-    [xX](?P<episodenumberstart>[0-9]+) # elso resz sorszama x23
-    ([xX][0-9]+)* # x24x25 stb
-    [xX](?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ((?<![. _-])- # elvalaszto
-    (?P<releasegroup>[^-]+)) # kiado csoport
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?(?P<seasonnumber>[0-9]+)[xX](?P<episodenumberstart>[0-9]+)([xX][0-9]+)*[xX](?P<episodenumberend>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.s01e23-24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    [Ss](?P<seasonnumber>[0-9]+) # s01
-    [\\.\\- ]?  # elvalaszto
-    [Ee](?P<episodenumberstart>[0-9]+) # elso resz sorszama e23
-    ( # -24 stb
-         [\\-]
-         [Ee]?[0-9]+
-    )*
-         [\\-] # elvalaszto
-         [Ee]?(?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ((?<![. _-])- # elvalaszto
-    (?P<releasegroup>[^-]+)) # kiado csoport
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?[Ss](?P<seasonnumber>[0-9]+)[\\.\\- ]?[Ee](?P<episodenumberstart>[0-9]+)([\\-][Ee]?[0-9]+)*[\\-][Ee]?(?P<episodenumberend>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.1x23-24*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve
-    (?P<seasonnumber>[0-9]+) # 1
-    [xX](?P<episodenumberstart>[0-9]+) # elso resz sorszama x23
-    ( # -24 stb
-         [\\-+][0-9]+
-    )*
-         [\\-+] # elvalaszto
-         (?P<episodenumberend>[0-9]+) # utolso resz sorszama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ((?<![. _-])- # elvalaszto
-    (?P<releasegroup>[^-]+)) # kiado csoport
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?(?P<seasonnumber>[0-9]+)[xX](?P<episodenumberstart>[0-9]+)([\\-+][0-9]+)*[\\-+](?P<episodenumberend>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.1x09*
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?  # sorozat neve es elvalaszto
-    \\[?  # [ opcionalis
-    (?P<seasonnumber>[0-9]+) # sorozat szama
-    [xX] # x
-    (?P<episodenumber>[0-9]+) # epizod szama
-    [\\.\\- ] # elvalaszto
-    ((?P<extrainfo>.+?)  # extra informacio
-    ((?<![. _-])- # elvalaszto
-    (?P<releasegroup>[^-]+)) # kiado csoport
-    ?\\.  # elvalaszto
-    (?P<extension>[^.]+)?)?$ # kiterjesztes
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?\\[?(?P<seasonnumber>[0-9]+)[xX](?P<episodenumber>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.s01.e01, foo.s01_e01, "foo.s01 - e01"
-- "
-    ^((?P<seriesname>.+?)[ \\._\\-])?
-    \\[?
-    [Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?
-    [Ee]?(?P<episodenumber>[0-9]+)
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ((?<![. _-])-
-    (?P<releasegroup>[^-]+))
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+  - "^((?P<seriesname>.+?)[ \\._\\-])?\\[?[Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?[Ee]?(?P<episodenumber>[0-9]+)[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.103*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{1})
-    (?P<episodenumber>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ((?<![. _-])-
-    (?P<releasegroup>[^-]+))
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+  - "^(?P<seriesname>.+)[ \\._\\-](?P<seasonnumber>[0-9]{1})(?P<episodenumber>[0-9]{2})[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.0103*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{2})
-    (?P<episodenumber>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ((?<![. _-])-
-    (?P<releasegroup>[^-]+))
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+  - "^(?P<seriesname>.+)[ \\._\\-](?P<seasonnumber>[0-9]{2})(?P<episodenumber>[0-9]{2})[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # foo.10304*
-- "
-    ^(?P<seriesname>.+)[ \\._\\-]
-    (?P<seasonnumber>[0-9]{1})
-    (?P<episodenumberstart>[0-9]{2})
-    (?P<episodenumberend>[0-9]{2})
-    [\\.\\- ]
-    ((?P<extrainfo>.+?)
-    ((?<![. _-])-
-    (?P<releasegroup>[^-]+))
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+  - "^(?P<seriesname>.+)[ \\._\\-](?P<seasonnumber>[0-9]{1})(?P<episodenumberstart>[0-9]{2})(?P<episodenumberend>[0-9]{2})[\\.\\- ]((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
   # show.name.e123.abc
-- "
-    ^(?P<seriesname>.+?)  # sorozat neve
-    [ \\._\\-] # elvalaszto
-    [Ee](?P<episodenumber>[0-9]+) # E123
-    ((?P<extrainfo>.+?)
-    ((?<![. _-])-
-    (?P<releasegroup>[^-]+))
-    ?\\.
-    (?P<extension>[^.]+)?)?$
-    "
+  - "^(?P<seriesname>.+?)[ \\._\\-][Ee](?P<episodenumber>[0-9]+)((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+))?\\.(?P<extension>[^.]+)?)?$"
 
 # A sorozat neveben ha van datum azt el kell valasztani tole
 seriesname_year_pattern: "^((?P<seriesname>.+?)[ ])?(?P<year>(19|20)\\d{2}?)?$"

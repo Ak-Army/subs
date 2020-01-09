@@ -47,18 +47,19 @@ func (d *Download) Run() {
 	d.log = xlog.New(xlog.Config{Output: xlog.NewConsoleOutput()})
 	d.getConfig()
 	if d.config.Log {
-		file, err := os.OpenFile(path.Join(DefDir, LogName), 0777, os.ModeAppend)
+		file, err := os.OpenFile(path.Join(DefDir, LogName), os.O_CREATE|os.O_RDWR, os.ModeExclusive)
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer file.Close()
 		d.log = xlog.New(xlog.Config{
-			Output: xlog.NewOutputChannel(xlog.MultiOutput{
+			Output: xlog.MultiOutput{
 				xlog.NewConsoleOutput(),
 				xlog.NewLogfmtOutput(file),
-			}),
+			},
 		})
 	}
-	d.log.Debugf("Config: %+v", d)
+	d.log.Debugf("Config: %+v", d.config)
 	ff := internal.FileFinder{
 		ValidExtensions:   d.config.ValidExtensions,
 		FilenameBlacklist: d.config.FilenameBlacklist,
@@ -69,8 +70,6 @@ func (d *Download) Run() {
 		if err != nil {
 			d.log.Error(err)
 		}
-		d.log.Debug("Files: ", files)
-
 		fileParser := internal.FileParser{
 			FilenamePatterns:             d.config.FilenamePatterns,
 			SeriesnameYearPattern:        d.config.SeriesnameYearPattern,
@@ -81,9 +80,11 @@ func (d *Download) Run() {
 			ExtensionPattern:             d.config.ExtensionPattern,
 			EpisodeNumber:                d.config.EpisodeNumber,
 		}
-		fileParser.Parse(files, d.log)
+		seriesParams := fileParser.Parse(files, d.log)
 
-		d.log.Debug("ParsedFiles: ", files)
+		// subtitle_search(result, year, seasonnumber, episodenumbers, extrainfo, releasegroup, re.sub(Config["extension_pattern"], "", filename), onlypath, fullpath)
+
+		d.log.Debug("Series params: ", seriesParams)
 	}
 }
 

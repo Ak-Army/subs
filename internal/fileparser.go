@@ -22,6 +22,14 @@ type FileParser struct {
 	EpisodeNumber                string
 }
 
+type SeriesParams struct {
+	Name          string
+	SeasonNumber  string
+	EpisodeNumber string
+	ExtraInfo     string
+	ReleaseGroup  string
+}
+
 const QuickUrlTvmaze string = "http://api.tvmaze.com/singlesearch/shows?q="
 const QuickUrlTvdb string = "http://thetvdb.com/api/GetSeries.php?seriesname="
 
@@ -44,7 +52,8 @@ func init() {
 	}
 }
 
-func (fp FileParser) Parse(files []string, log xlog.Logger) {
+func (fp FileParser) Parse(files []string, log xlog.Logger) []*SeriesParams {
+	var ret []*SeriesParams
 	var patterns []*regexp.Regexp
 	for _, p := range fp.FilenamePatterns {
 		re, err := regexp.Compile(p)
@@ -77,17 +86,29 @@ func (fp FileParser) Parse(files []string, log xlog.Logger) {
 				releaseGroup := fp.releaseGroup(namedGroups)
 				if realName, err := fp.checkTvMaze(seriesName); err != nil {
 					log.Info("Start set sub: ", realName, extraInfo, releaseGroup)
-					// subtitle_search(result, year, seasonnumber, episodenumbers, extrainfo, releasegroup, re.sub(Config["extension_pattern"], "", filename), onlypath, fullpath)
+					ret = append(ret, &SeriesParams{
+						Name:          realName,
+						SeasonNumber:  seasonNumber,
+						EpisodeNumber: episodeNumber,
+						ExtraInfo:     extraInfo,
+						ReleaseGroup:  releaseGroup,
+					})
 				} else if realName, err := fp.checkTvDB(seriesName); err != nil {
 					log.Info("Start set sub: ", realName, extraInfo, releaseGroup)
-					// subtitle_search(result, year, seasonnumber, episodenumbers, extrainfo, releasegroup, re.sub(Config["extension_pattern"], "", filename), onlypath, fullpath)
+					ret = append(ret, &SeriesParams{
+						Name:          realName,
+						SeasonNumber:  seasonNumber,
+						EpisodeNumber: episodeNumber,
+						ExtraInfo:     extraInfo,
+						ReleaseGroup:  releaseGroup,
+					})
 				} else {
 					log.Infof("# Not found on www.tvmaze.com and thetvdb.com: %s %s %sx%s", seriesName, year, seasonNumber, episodeNumber)
 				}
-				return
 			}
 		}
 	}
+	return ret
 }
 
 func (fp FileParser) episodeNumber(namedgroups map[string]string) string {

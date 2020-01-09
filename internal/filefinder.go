@@ -32,8 +32,6 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 		check := ff.check(f.Name())
 		if check {
 			files = append(files, path)
-		} else if f.IsDir() {
-			return filepath.SkipDir
 		}
 
 		return nil
@@ -60,7 +58,7 @@ func (ff *FileFinder) checkExtension(name string) bool {
 
 func (ff *FileFinder) checkBlacklist(name string) bool {
 	for _, i := range ff.FilenameBlacklist {
-		if i.IsAllowed(name) {
+		if !i.IsAllowed(name) {
 			return true
 		}
 	}
