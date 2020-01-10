@@ -132,7 +132,7 @@ filename_patterns:
 # A sorozat neveben ha van datum azt el kell valasztani tole
 seriesname_year_pattern: "^((?P<seriesname>.+?)[ ])?(?P<year>(19|20)\\d{2}?)?$"
 # subirat.net oldalhoz kell a sorozat es az epizos sorszam olvasashoz
-subirat_pattern: "^(.vad: (?P<seasonnumber>[0-9]+).+)?(Epiz.d: (?P<episodenumber>[0-9]+).+)$"
+subirat_pattern: "(.vad: (?P<seasonnumber>[0-9]+).+)?(Epiz.d: (?P<episodenumber>[0-9]+).+)"
 
 # feliratok.info nyelv meghatarozashoz, pelda: Angol, 2
 language: "Magyar"

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/Ak-Army/subs/internal/downloader"
+	"github.com/Ak-Army/subs/internal/downloader/subiratok"
 	"log"
 	"os"
 	"path"
@@ -84,8 +84,17 @@ func (d *Download) Run() {
 		}
 		seriesParams := fileParser.Parse(files)
 		for _, s := range seriesParams {
-			dl := &downloader.Feliratok{
+			/*dl := &feliratok.Feliratok{
 				SeriesParams: s,
+				Logger:       d.log,
+			}
+			err := dl.Download(d.config.Language)
+			if err != nil {
+				d.log.Error(err)
+			}*/
+			dl := &subiratok.Subiratok{
+				SeriesParams: s,
+				Config:       d.config,
 				Logger:       d.log,
 			}
 			err := dl.Download(d.config.Language)
