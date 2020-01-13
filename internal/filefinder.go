@@ -10,6 +10,7 @@ type FileFinder struct {
 	ValidExtensions   []string
 	FilenameBlacklist []*FilenameBlacklist
 	Recursive         bool
+	LanguageSub       string
 }
 
 func (ff *FileFinder) Find(path string) ([]string, error) {
@@ -20,7 +21,7 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 		return files, err
 	}
 	if !f.IsDir() {
-		if ff.check(f.Name()) {
+		if ff.check(path, f) {
 			files = append(files, path)
 		}
 		return files, nil
@@ -29,8 +30,7 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 		if p != path && !ff.Recursive && f.IsDir() {
 			return filepath.SkipDir
 		}
-		check := ff.check(f.Name())
-		if check {
+		if ff.check(p, f) {
 			files = append(files, p)
 		}
 
@@ -39,9 +39,11 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 	return files, nil
 }
 
-func (ff *FileFinder) check(name string) bool {
-	if ff.checkExtension(name) {
-		return ff.checkBlacklist(name)
+func (ff *FileFinder) check(p string, f os.FileInfo) bool {
+	if ff.checkExtension(f.Name()) {
+		if ff.checkBlacklist(f.Name()) {
+			return ff.checkSrt(p)
+		}
 	}
 	return false
 }
@@ -63,4 +65,12 @@ func (ff *FileFinder) checkBlacklist(name string) bool {
 		}
 	}
 	return false
+}
+
+func (ff *FileFinder) checkSrt(p string) bool {
+	info, err := os.Stat(strings.TrimSuffix(p, filepath.Ext(p)) + "." + ff.LanguageSub + ".srt")
+	if os.IsNotExist(err) {
+		return true
+	}
+	return info.IsDir()
 }

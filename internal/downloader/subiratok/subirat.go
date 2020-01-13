@@ -78,7 +78,7 @@ func (s *Subiratok) Download(sp *internal.SeriesParams) error {
 			if strings.HasSuffix(item.Title, ".srt") &&
 				fmt.Sprintf(s.Config.EpisodeNumber, seasonNumber) == sp.SeasonNumber &&
 				fmt.Sprintf(s.Config.EpisodeNumber, episodeNumber) == sp.EpisodeNumber {
-				return s.DownloadFile(item.Link, sp.Path)
+				return s.DownloadFile(item.Link, s.GetSrtPath(item.Link, sp.Path))
 			}
 		}
 	}

@@ -66,7 +66,7 @@ func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
 			strings.Contains(strings.ToLower(name), fmt.Sprintf("%s-%s", strings.ToLower(sp.ExtraInfo), strings.ToLower(sp.ReleaseGroup))) {
 			link := tr.Find("td").Slice(6, 7).Find("a[target=\"_parent\"]")
 			if href, ok := link.Attr("href"); ok {
-				err = h.DownloadFile(href, sp.Path)
+				err = h.DownloadFile(href, h.GetSrtPath("a.srt", sp.Path))
 				found = true
 				return
 			}

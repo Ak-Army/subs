@@ -74,34 +74,50 @@ func (b BaseDownloader) DownloadFile(href string, path string) error {
 		return fmt.Errorf("wrong response code:  %d", res.StatusCode)
 	}
 	ext := filepath.Ext(href)
-	base := filepath.Base(path)
-	newPath := strings.ReplaceAll(path, base, strings.TrimSuffix(base, filepath.Ext(base))+"."+b.Config.LanguageSub+ext)
-	out, err := os.Create(newPath)
-	_, err = io.Copy(out, res.Body)
-	if err != nil {
-		return err
-	}
 	if ext == ".rar" || ext == ".zip" {
-		return b.deCompress(newPath, strings.ReplaceAll(path, base, strings.TrimSuffix(base, filepath.Ext(base))+"."+b.Config.LanguageSub))
+		zip := b.replaceExtension(path, ".zip")
+		b.Logger.Info(zip, " -> ", path)
+		out, err := os.Create(zip)
+		_, err = io.Copy(out, res.Body)
+		if err != nil {
+			return err
+		}
+		return b.deCompress(zip, path)
+	} else {
+		out, err := os.Create(path)
+		_, err = io.Copy(out, res.Body)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
+func (b BaseDownloader) GetSrtPath(filename string, path string) string {
+	ext := filepath.Ext(filename)
+	return b.replaceExtension(path, "."+b.Config.LanguageSub+ext)
+}
+
+func (b BaseDownloader) replaceExtension(path string, ext string) string {
+	return strings.TrimSuffix(path, filepath.Ext(path)) + ext
+}
+
 func (b BaseDownloader) deCompress(source string, destination string) error {
-	if err := archiver.Unarchive(source, filepath.Join(destination)); err != nil {
+	destDir := destination + "_decomp"
+	if err := archiver.Unarchive(source, destDir); err != nil {
 		return err
 	}
 	defer os.Remove(source)
-	filepath.Walk(destination, func(p string, f os.FileInfo, err error) error {
-		b.Logger.Debug(p, " - ", destination)
-		if f.IsDir() && p != destination {
+	filepath.Walk(destDir, func(p string, f os.FileInfo, err error) error {
+		b.Logger.Debug(p, " - ", destDir)
+		if f.IsDir() && p != destDir {
 			return filepath.SkipDir
 		}
 		if filepath.Ext(f.Name()) == ".srt" {
-			return os.Rename(p, destination+".srt")
+			return os.Rename(p, destination)
 		}
 
 		return nil
 	})
-	return os.RemoveAll(destination)
+	return os.RemoveAll(destDir)
 }

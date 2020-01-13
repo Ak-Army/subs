@@ -68,6 +68,7 @@ func (d *Download) Run() {
 		ValidExtensions:   d.config.ValidExtensions,
 		FilenameBlacklist: d.config.FilenameBlacklist,
 		Recursive:         d.config.Recursive,
+		LanguageSub:       d.config.LanguageSub,
 	}
 	var downloaders []downloader.Downloader
 	if d.config.Feliratok {

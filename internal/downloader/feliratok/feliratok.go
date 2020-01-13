@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/Ak-Army/subs/internal"
 	"github.com/Ak-Army/subs/internal/downloader"
@@ -55,7 +56,11 @@ func (f *Feliratok) Download(sp *internal.SeriesParams) error {
 				return
 			}
 			if href, ok := link.Attr("href"); ok {
-				err = f.DownloadFile(Url+href, sp.Path)
+				base, err := url.ParseQuery(href)
+				if err != nil {
+					return
+				}
+				err = f.DownloadFile(Url+href, f.GetSrtPath(base.Get("fnev"), sp.Path))
 				found = true
 			}
 		})
