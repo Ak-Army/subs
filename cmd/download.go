@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/Ak-Army/subs/internal/downloader/subiratok"
 	"log"
 	"os"
 	"path"
@@ -9,6 +8,10 @@ import (
 	"github.com/Ak-Army/cli"
 	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/subs/internal"
+	"github.com/Ak-Army/subs/internal/downloader"
+	"github.com/Ak-Army/subs/internal/downloader/feliratok"
+	"github.com/Ak-Army/subs/internal/downloader/hosszupuska"
+	"github.com/Ak-Army/subs/internal/downloader/subiratok"
 	"github.com/Ak-Army/xlog"
 )
 
@@ -66,6 +69,28 @@ func (d *Download) Run() {
 		FilenameBlacklist: d.config.FilenameBlacklist,
 		Recursive:         d.config.Recursive,
 	}
+	var downloaders []downloader.Downloader
+	if d.config.Feliratok {
+		downloaders = append(downloaders, &feliratok.Feliratok{BaseDownloader: &downloader.BaseDownloader{
+			Config: d.config,
+			Logger: d.log,
+			Lang:   d.config.Language,
+		}})
+	}
+	if d.config.Subirat {
+		downloaders = append(downloaders, &subiratok.Subiratok{BaseDownloader: &downloader.BaseDownloader{
+			Config: d.config,
+			Logger: d.log,
+			Lang:   d.config.Language,
+		}})
+	}
+	if d.config.Hosszupuskasub {
+		downloaders = append(downloaders, &hosszupuska.Hosszupuska{BaseDownloader: &downloader.BaseDownloader{
+			Config: d.config,
+			Logger: d.log,
+			Lang:   d.config.Language,
+		}})
+	}
 	for _, f := range d.path {
 		files, err := ff.Find(f)
 		if err != nil {
@@ -82,28 +107,15 @@ func (d *Download) Run() {
 			EpisodeNumber:                d.config.EpisodeNumber,
 			Logger:                       d.log,
 		}
-		seriesParams := fileParser.Parse(files)
-		for _, s := range seriesParams {
-			/*dl := &feliratok.Feliratok{
-				SeriesParams: s,
-				Logger:       d.log,
-			}
-			err := dl.Download(d.config.Language)
-			if err != nil {
-				d.log.Error(err)
-			}*/
-			dl := &subiratok.Subiratok{
-				SeriesParams: s,
-				Config:       d.config,
-				Logger:       d.log,
-			}
-			err := dl.Download(d.config.Language)
-			if err != nil {
-				d.log.Error(err)
+		for _, s := range fileParser.Parse(files) {
+			for _, dl := range downloaders {
+				if err := dl.Download(s); err != nil {
+					d.log.Error(err)
+					continue
+				}
+				break
 			}
 		}
-		// subtitle_search(result, year, seasonnumber, episodenumbers, extrainfo, releasegroup, re.sub(Config["extension_pattern"], "", filename), onlypath, fullpath)
-
 	}
 
 }

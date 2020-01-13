@@ -92,7 +92,7 @@ func (fp FileParser) Parse(files []string) []*SeriesParams {
 				if realName, err := fp.checkTvMaze(seriesName); err == nil {
 					fp.Logger.Info("Start set sub: ", realName, " ", extraInfo, " ", releaseGroup)
 					ret = append(ret, &SeriesParams{
-						Path:          filepath.Dir(path),
+						Path:          path,
 						Name:          realName,
 						SeasonNumber:  seasonNumber,
 						EpisodeNumber: episodeNumber,
