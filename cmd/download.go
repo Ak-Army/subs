@@ -74,21 +74,18 @@ func (d *Download) Run() {
 		downloaders = append(downloaders, &feliratok.Feliratok{BaseDownloader: &downloader.BaseDownloader{
 			Config: d.config,
 			Logger: d.log,
-			Lang:   d.config.Language,
 		}})
 	}
 	if d.config.Subirat {
 		downloaders = append(downloaders, &subiratok.Subiratok{BaseDownloader: &downloader.BaseDownloader{
 			Config: d.config,
 			Logger: d.log,
-			Lang:   d.config.Language,
 		}})
 	}
 	if d.config.Hosszupuskasub {
 		downloaders = append(downloaders, &hosszupuska.Hosszupuska{BaseDownloader: &downloader.BaseDownloader{
 			Config: d.config,
 			Logger: d.log,
-			Lang:   d.config.Language,
 		}})
 	}
 	for _, f := range d.path {

@@ -31,7 +31,7 @@ func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
 	q.Add("cim", fmt.Sprintf("%s%s", sp.Name, syear))
 	q.Add("evad", fmt.Sprintf("s%s", sp.SeasonNumber))
 	q.Add("resz", fmt.Sprintf("e%s", sp.EpisodeNumber))
-	q.Add("nyelvtipus", "1")
+	q.Add("nyelvtipus", h.LanguageNumber)
 	q.Add("x", "13")
 	q.Add("y", "14")
 	req.URL.RawQuery = q.Encode()
@@ -66,7 +66,7 @@ func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
 			strings.Contains(strings.ToLower(name), fmt.Sprintf("%s-%s", strings.ToLower(sp.ExtraInfo), strings.ToLower(sp.ReleaseGroup))) {
 			link := tr.Find("td").Slice(6, 7).Find("a[target=\"_parent\"]")
 			if href, ok := link.Attr("href"); ok {
-				h.DownloadFile(href, sp.Path)
+				err = h.DownloadFile(href, sp.Path)
 				found = true
 				return
 			}
@@ -75,5 +75,5 @@ func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
 	if !found {
 		return errors.New("not found")
 	}
-	return nil
+	return err
 }

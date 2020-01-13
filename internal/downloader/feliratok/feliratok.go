@@ -24,7 +24,7 @@ func (f *Feliratok) Download(sp *internal.SeriesParams) error {
 	}
 	q := req.URL.Query()
 	q.Add("search", fmt.Sprintf("%s %s %sx%s %s %s", sp.Name, sp.Year, sp.SeasonNumber, sp.EpisodeNumber, sp.ExtraInfo, sp.ReleaseGroup))
-	q.Add("nyelv", f.Lang)
+	q.Add("nyelv", f.Config.Language)
 	req.URL.RawQuery = q.Encode()
 
 	res, err := http.DefaultClient.Do(req)
@@ -55,7 +55,7 @@ func (f *Feliratok) Download(sp *internal.SeriesParams) error {
 				return
 			}
 			if href, ok := link.Attr("href"); ok {
-				f.DownloadFile(Url+href, sp.Path)
+				err = f.DownloadFile(Url+href, sp.Path)
 				found = true
 			}
 		})
@@ -63,5 +63,5 @@ func (f *Feliratok) Download(sp *internal.SeriesParams) error {
 	if !found {
 		return errors.New("not found")
 	}
-	return nil
+	return err
 }
