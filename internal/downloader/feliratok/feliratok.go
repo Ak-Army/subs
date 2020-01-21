@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/Ak-Army/subs/internal"
 	"github.com/Ak-Army/subs/internal/downloader"
@@ -18,13 +19,13 @@ type Feliratok struct {
 }
 
 func (f *Feliratok) Download(sp *internal.SeriesParams) error {
-	f.Logger.Info("Start download: ", sp.Name)
+	f.Logger.Info("Searching for subtitle: ", sp.Name, " ", strings.TrimLeft(sp.SeasonNumber, "0"), "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	req, err := f.NewRequest("GET", Url, nil)
 	if err != nil {
 		return err
 	}
 	q := req.URL.Query()
-	q.Add("search", fmt.Sprintf("%s %s %sx%s %s %s", sp.Name, sp.Year, sp.SeasonNumber, sp.EpisodeNumber, sp.ExtraInfo, sp.ReleaseGroup))
+	q.Add("search", fmt.Sprintf("%s %s %sx%s %s %s", sp.Name, sp.Year, strings.TrimLeft(sp.SeasonNumber, "0"), sp.EpisodeNumber, sp.ExtraInfo, sp.ReleaseGroup))
 	q.Add("nyelv", f.Config.Language)
 	req.URL.RawQuery = q.Encode()
 
@@ -66,7 +67,7 @@ func (f *Feliratok) Download(sp *internal.SeriesParams) error {
 		})
 	})
 	if !found {
-		return errors.New("not found")
+		return errors.New("not found feliratok.info")
 	}
 	return err
 }

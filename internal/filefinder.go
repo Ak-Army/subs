@@ -62,6 +62,8 @@ func (ff *FileFinder) checkBlacklist(name string) bool {
 	for _, i := range ff.FilenameBlacklist {
 		if !i.IsAllowed(name) {
 			return true
+		} else {
+			break
 		}
 	}
 	return false

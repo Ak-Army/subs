@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/Ak-Army/cli"
 	"github.com/Ak-Army/subs/config"
@@ -13,9 +14,10 @@ import (
 	"github.com/Ak-Army/subs/internal/downloader/hosszupuska"
 	"github.com/Ak-Army/subs/internal/downloader/subiratok"
 	"github.com/Ak-Army/xlog"
+	"gopkg.in/gomail.v2"
 )
 
-const DefDir string = "." //"~/.feliratok/"
+const DefDir string = "."
 const LogName string = "feliratok.log"
 
 type Download struct {
@@ -27,7 +29,6 @@ type Download struct {
 	Subirat        bool `flag:"subirat, Search and download subtitle subirat.net"`
 	Feliratok      bool `flag:"feliratok, Search and download subtitle feliratok.info"`
 	Hosszupuskasub bool `flag:"hosszupuskasub, Search and download subtitle hosszupuskasub.com"`
-	Season         bool `flag:"season, Search and download season pack"`
 	Recursive      bool `flag:"recursive, Descend more than one level directories supplied as arguments"`
 
 	path   []string
@@ -48,17 +49,25 @@ func (d *Download) Desc() string {
 }
 
 func (d *Download) Run() {
-	d.log = xlog.New(xlog.Config{Output: xlog.NewConsoleOutput()})
+	d.log = xlog.New(xlog.Config{
+		Output: xlog.MultiOutput{
+			xlog.LevelOutput{
+				Info: xlog.NewConsoleOutput(),
+			},
+		},
+	})
 	d.getConfig()
 	if d.config.Log {
-		file, err := os.OpenFile(path.Join(DefDir, LogName), os.O_CREATE|os.O_RDWR, os.ModeExclusive)
+		file, err := os.OpenFile(path.Join(DefDir, LogName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer file.Close()
 		d.log = xlog.New(xlog.Config{
 			Output: xlog.MultiOutput{
-				xlog.NewConsoleOutput(),
+				xlog.LevelOutput{
+					Info: xlog.NewConsoleOutput(),
+				},
 				xlog.NewLogfmtOutput(file),
 			},
 		})
@@ -89,6 +98,11 @@ func (d *Download) Run() {
 			Logger: d.log,
 		}})
 	}
+	var mess []string
+	m := gomail.NewMessage()
+	m.SetHeader("From", d.config.EmailFrom)
+	m.SetHeader("To", d.config.EmailTo)
+	m.SetHeader("Subject", "Subtitle")
 	for _, f := range d.path {
 		files, err := ff.Find(f)
 		if err != nil {
@@ -111,11 +125,18 @@ func (d *Download) Run() {
 					d.log.Error(err)
 					continue
 				}
+				mess = append(mess, s.Name+" "+s.SeasonNumber+"x"+s.EpisodeNumber)
 				break
 			}
 		}
 	}
-
+	if d.config.Email && len(mess) > 0 {
+		m.SetBody("text/plain", strings.Join(mess, "\r\n"))
+		d := gomail.NewDialer(d.config.EmailSMTPHost, d.config.EmailSMTPPort, d.config.EmailSMTPUser, d.config.EmailSMTPPassword)
+		if err := d.DialAndSend(m); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (d *Download) Samples() []string {
@@ -136,11 +157,10 @@ func (d *Download) getConfig() {
 	if d.Email {
 		d.config.Email = d.Email
 	}
-	if d.Subirat || d.Feliratok || d.Hosszupuskasub || d.Season {
+	if d.Subirat || d.Feliratok || d.Hosszupuskasub {
 		d.config.Subirat = d.Subirat
 		d.config.Feliratok = d.Feliratok
 		d.config.Hosszupuskasub = d.Hosszupuskasub
-		d.config.Season = d.Season
 	}
 	if d.Recursive {
 		d.config.Recursive = d.Recursive

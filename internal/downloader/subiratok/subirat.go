@@ -20,7 +20,7 @@ type Subiratok struct {
 }
 
 func (s *Subiratok) Download(sp *internal.SeriesParams) error {
-	s.Logger.Info("Download: ", sp.Name)
+	s.Logger.Info("Searching for subtitle: ", sp.Name, " ", sp.SeasonNumber, "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	req, err := s.NewRequest("GET", Url, nil)
 	if err != nil {
 		return err
@@ -66,24 +66,25 @@ func (s *Subiratok) Download(sp *internal.SeriesParams) error {
 		if match := s.matchWithGroup(re, item.Description); len(match) > 0 {
 			seasonNumber, ok := match["seasonnumber"]
 			if !ok {
-				s.Logger.Debug("no season number")
+				s.Logger.Debug("No season number")
 				continue
 			}
 			episodeNumber, ok := match["episodenumber"]
 			if !ok {
-				s.Logger.Debug("no episode number")
+				s.Logger.Debug("No episode number")
 				continue
 			}
 
 			if strings.HasSuffix(item.Title, ".srt") &&
 				fmt.Sprintf(s.Config.EpisodeNumber, seasonNumber) == sp.SeasonNumber &&
-				fmt.Sprintf(s.Config.EpisodeNumber, episodeNumber) == sp.EpisodeNumber {
+				fmt.Sprintf(s.Config.EpisodeNumber, episodeNumber) == sp.EpisodeNumber &&
+				strings.Contains(strings.ToLower(item.Description), strings.ToLower(sp.ReleaseGroup)) {
 				return s.DownloadFile(item.Link, s.GetSrtPath(item.Link, sp.Path))
 			}
 		}
 	}
 
-	return errors.New("not found")
+	return errors.New("not found subirat.net")
 }
 
 func (s *Subiratok) matchWithGroup(r *regexp.Regexp, st string) map[string]string {

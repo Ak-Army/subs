@@ -18,7 +18,7 @@ type Hosszupuska struct {
 }
 
 func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
-	h.Logger.Info("Download: ", sp.Name)
+	h.Logger.Info("Searching for subtitle: ", sp.Name, " ", sp.SeasonNumber, "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	req, err := h.NewRequest("GET", Url+"/sorozatok.php", nil)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (h *Hosszupuska) Download(sp *internal.SeriesParams) error {
 		}
 	})
 	if !found {
-		return errors.New("not found")
+		return errors.New("not found hosszupuska.com")
 	}
 	return err
 }

@@ -20,37 +20,27 @@ dl_subirat: true
 dl_feliratok: true
 dl_hosszupuskasub: true
 
+recursive: false
+
 # Miutan szetbontottuk a fajl nevet akkor ezeket a dolgokat csereljuk a kulonbozo reszekben.
 extra_info_replacements:
   - replacement: ""
-    match: "[hH][eE][vV][cC][. ]26[45]"
+    match: "(?i)(hevc|x|H)[. ]?26[45]"
     is_regex: true
   - replacement: ""
-    match: "[xXhH](.?| ?)26[45]"
+    match: "(?i)(AAC|DDP)[ ]*[25][. ][01]"
     is_regex: true
   - replacement: ""
-    match: "(AAC|DD)[+][25][. ][01]"
+    match: "(?i)(xViD|READNFO|AMZN|HBO|propher|repack)"
     is_regex: true
-  - replacement: ""
-    match: "[xX][vV][iI][dD]"
-    is_regex: true
-  - replacement: ""
-    match: "READNFO"
-    is_regex: true
-  - replacement: ""
-    match: "[aA][mM][zZ][nN]"
-    is_regex: true
-  - replacement: ""
-    match: "[hH][bB][oO]"
-    is_regex: true
-  - replacement: "720p"
-    match: "720[pP][. ][hH][dD][tT][vV]"
+  - replacement: "2160p"
+    match: "(?i)2160p([. ]*|)(hdtv|web[-]?rip|web[-]?dl|web)"
     is_regex: true
   - replacement: "1080p"
-    match: "1080[pP][. ][hH][dD][tT][vV]"
+    match: "(?i)1080p([. ]*|)(hdtv|web[-]?rip|web[-]?dl|web)"
     is_regex: true
   - replacement: "720p"
-    match: "720[pP]([. ]*|)[wW][eE][bB][rR][iI][pP]|720[pP]([. ]*|)[wW][eE][bB]-[dD][lL]|720[pP]([. ]*|)[wW]eE[bB]"
+    match: "(?i)720p([. ]*|)(hdtv|web[-]?rip|web[-]?dl|web)"
     is_regex: true
   - replacement: ""
     match: " "
@@ -60,23 +50,13 @@ releasegroup_info_replacements:
   - replacement: ""
     match: "[(\\[].*[)\\]]"
     is_regex: true
-  - replacement: ""
-    match: "[tT][bB][sS]"
-    is_regex: true
-
+  
+# A The Bridge sorozat miatt kell hogy a US vegzodest toroljuk mert nem ismeri fel a sorozatos oldal
+# Ha elrontanak a fajl nevet es a sorozat neveben bennemaradnak akkor ezeket torolni kell.
 seriesname_replacements:
-  # A The Bridge sorozat miatt kell hogy a US vegzodest toroljuk mert nem ismeri fel a sorozatos oldal
   - replacement: ""
-    match: " [Uu][Ss]"
+    match: "(?i)( US|propher|repack)"
     is_regex: true
-  # Ha elrontanak a fajl nevet es a sorozat neveben bennemaradnak akkor ezeket torolni kell.
-  - replacement: ""
-    match: "[pP][rR][oO][pP][eE][rR]"
-    is_regex: true
-  - replacement: ""
-    match: "[rR][eE][pP][aA][cC][kK]"
-    is_regex: true
-
 
 # Ha nem ures akkor az itt megadott infok alapjan tiltunk fajl neveket, pelda:
 # [{is_regex: true, match: ".*sample.*"}, {is_regex: false, match: "sample"}]
@@ -84,7 +64,7 @@ filename_blacklist:
   - is_regex: true
     match: ".*sample.*"
   - is_regex: true
-    match: ".*[.-][hH][uU][nN][.-].*"
+    match: "(?i)(.*[.-]HUN[.-]*)"
     full_path: true
 
 
@@ -92,19 +72,9 @@ filename_blacklist:
 # extension_pattern: "(\.(eng|cze))?(\.[a-zA-Z0-9]+)$"
 # ezt "foo.eng.srt" erre bontja  "foo" es ".eng.srt".
 extension_pattern: "(\\.[a-zA-Z0-9]+)$"
+
 # Ha a sorozat cime is szerepelne a fajl neveben akkor azt ki kell torolni.
-extra_info_pattern: "^(?P<extra>.*(720p|720i|1080p|1080i)|.*(HDTV|WEBRip|DVDRip|WEBDL|TVRip))$"
-
-# Seasonpack kezelese:
-valid_subextensions:
-  - "srt"
-
-dl_season: false
-recursive: false
-
-dir_pattern: "[^\\/]+(?=\\/$|$)"
-
-seasonpack_pattern: "^((?P<seriesname>.+?)[ \\._\\-])?\\[?[Ss](?P<seasonnumber>[0-9]+)[ ]?[\\._\\- ]?[ ]?((?P<extrainfo>.+?)(-(?P<releasegroup>[^-]+)))$"
+extra_info_pattern: "(?i)(?P<extra>((720|1080|2160)[pi]|hdtv|webrip|dvdrip|webdl|tvrip).*)$"
 
 # Fajlok szetbontasa talalhato itt:
 filename_patterns:
@@ -140,7 +110,6 @@ language_number: "1"
 
 # A plex miatt a letoltott feliratokhoz hozzatesszuk a nyelvet
 language_sub: "HU"
-subtitle_extension: "srt"
 
 # Az epizod sorszama mindig 2 karakteres legyen
 episode_number: "%02s"

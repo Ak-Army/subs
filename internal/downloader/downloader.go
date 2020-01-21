@@ -53,7 +53,7 @@ func (b *BaseDownloader) setCookies(url string) error {
 	}
 	defer res.Body.Close()
 	if res.StatusCode < 200 || res.StatusCode >= 400 {
-		return fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
+		return fmt.Errorf("Status code error: %d %s", res.StatusCode, res.Status)
 	}
 	b.cookies = res.Cookies()
 	return nil
@@ -71,7 +71,7 @@ func (b BaseDownloader) DownloadFile(href string, path string) error {
 	}
 	defer res.Body.Close()
 	if res.StatusCode < 200 || res.StatusCode >= 400 {
-		return fmt.Errorf("wrong response code:  %d", res.StatusCode)
+		return fmt.Errorf("Wrong response code:  %d", res.StatusCode)
 	}
 	ext := filepath.Ext(href)
 	if ext == ".rar" || ext == ".zip" {
@@ -108,6 +108,7 @@ func (b BaseDownloader) deCompress(source string, destination string) error {
 		return err
 	}
 	defer os.Remove(source)
+
 	filepath.Walk(destDir, func(p string, f os.FileInfo, err error) error {
 		b.Logger.Debug(p, " - ", destDir)
 		if f.IsDir() && p != destDir {

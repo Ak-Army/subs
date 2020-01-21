@@ -90,7 +90,7 @@ func (fp FileParser) Parse(files []string) []*SeriesParams {
 				extraInfo := fp.extraInfo(namedGroups)
 				releaseGroup := fp.releaseGroup(namedGroups)
 				if realName, err := fp.checkTvMaze(seriesName); err == nil {
-					fp.Logger.Info("Start set sub: ", realName, " ", extraInfo, " ", releaseGroup)
+					fp.Logger.Info("Start set sub: ", realName, " ", seasonNumber, "x", episodeNumber, " ", extraInfo, " ", releaseGroup)
 					ret = append(ret, &SeriesParams{
 						Path:          path,
 						Name:          realName,
@@ -101,7 +101,7 @@ func (fp FileParser) Parse(files []string) []*SeriesParams {
 						Year:          year,
 					})
 				} else if realName, err := fp.checkTvDB(seriesName); err == nil {
-					fp.Logger.Info("Start set sub: ", realName, extraInfo, releaseGroup)
+					fp.Logger.Info("Start set sub: ", realName, " ", seasonNumber, "x", episodeNumber, " ", extraInfo, " ", releaseGroup)
 					ret = append(ret, &SeriesParams{
 						Path:          filepath.Dir(path),
 						Name:          realName,
@@ -199,8 +199,10 @@ func (fp FileParser) extraInfo(namedgroups map[string]string) string {
 	if err != nil {
 		return ""
 	}
-	if matchYear := fp.matchWithGroup(re, s); len(matchYear) > 0 {
-		s = matchYear["extra"]
+	if matchExtra := fp.matchWithGroup(re, s); len(matchExtra) > 0 {
+		s = matchExtra["extra"]
+		//	} else {
+		//		return ""
 	}
 	for _, r := range fp.ExtraInfoReplacements {
 		s = r.Replace(s)
@@ -209,7 +211,7 @@ func (fp FileParser) extraInfo(namedgroups map[string]string) string {
 }
 
 func (fp FileParser) checkTvMaze(name string) (string, error) {
-	fp.Logger.Debug("checkTvMaze", QuickUrlTvmaze+url.QueryEscape(name))
+	fp.Logger.Debug("checkTvMaze ", QuickUrlTvmaze+url.QueryEscape(name))
 	res, err := http.DefaultClient.Get(QuickUrlTvmaze + url.QueryEscape(name))
 	if err != nil {
 		return "", err
@@ -228,7 +230,7 @@ func (fp FileParser) checkTvMaze(name string) (string, error) {
 	return result.RealName, nil
 }
 func (fp FileParser) checkTvDB(name string) (string, error) {
-	fp.Logger.Debug("checkTvDB", QuickUrlTvdb+url.QueryEscape(name))
+	fp.Logger.Debug("checkTvDB ", QuickUrlTvdb+url.QueryEscape(name))
 	res, err := http.DefaultClient.Get(QuickUrlTvdb + url.QueryEscape(name))
 	if err != nil {
 		return "", err
