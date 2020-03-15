@@ -1,14 +1,16 @@
-package internal
+package filefinder
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/Ak-Army/subs/config"
 )
 
 type FileFinder struct {
 	ValidExtensions   []string
-	FilenameBlacklist []*FilenameBlacklist
+	FilenameBlacklist []*config.FilenameBlacklist
 	Recursive         bool
 	LanguageSub       string
 }
@@ -40,12 +42,7 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 }
 
 func (ff *FileFinder) check(p string, f os.FileInfo) bool {
-	if ff.checkExtension(f.Name()) {
-		if ff.checkBlacklist(f.Name()) {
-			return ff.checkSrt(p)
-		}
-	}
-	return false
+	return ff.checkExtension(f.Name()) && ff.checkBlacklist(p) && ff.checkSrt(p)
 }
 
 func (ff *FileFinder) checkExtension(name string) bool {
@@ -53,20 +50,17 @@ func (ff *FileFinder) checkExtension(name string) bool {
 		if strings.HasSuffix(name, i) {
 			return true
 		}
-
 	}
 	return false
 }
 
 func (ff *FileFinder) checkBlacklist(name string) bool {
 	for _, i := range ff.FilenameBlacklist {
-		if !i.IsAllowed(name) {
-			return true
-		} else {
-			break
+		if i.IsBlacklisted(name) {
+			return false
 		}
 	}
-	return false
+	return true
 }
 
 func (ff *FileFinder) checkSrt(p string) bool {

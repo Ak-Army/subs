@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Ak-Army/subs/internal"
 	"github.com/Ak-Army/subs/internal/downloader"
+	"github.com/Ak-Army/subs/internal/fileparser"
 )
 
 const Url string = "http://subirat.net"
@@ -19,7 +19,7 @@ type Subiratok struct {
 	*downloader.BaseDownloader
 }
 
-func (s *Subiratok) Download(sp *internal.SeriesParams) error {
+func (s *Subiratok) Download(sp *fileparser.SeriesParams) error {
 	s.Logger.Info("Searching for subtitle: ", sp.Name, " ", sp.SeasonNumber, "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	req, err := s.NewRequest("GET", Url, nil)
 	if err != nil {
@@ -79,7 +79,7 @@ func (s *Subiratok) Download(sp *internal.SeriesParams) error {
 				fmt.Sprintf(s.Config.EpisodeNumber, seasonNumber) == sp.SeasonNumber &&
 				fmt.Sprintf(s.Config.EpisodeNumber, episodeNumber) == sp.EpisodeNumber &&
 				strings.Contains(strings.ToLower(item.Description), strings.ToLower(sp.ReleaseGroup)) {
-				return s.DownloadFile(item.Link, s.GetSrtPath(item.Link, sp.Path))
+				return s.DownloadFile(item.Link, sp)
 			}
 		}
 	}

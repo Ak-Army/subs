@@ -1,4 +1,4 @@
-package internal
+package config
 
 import (
 	"path/filepath"
@@ -11,7 +11,7 @@ type FilenameBlacklist struct {
 	FullPath bool   `yaml:"full_path,omitempty"`
 }
 
-func (fb *FilenameBlacklist) IsAllowed(filename string) bool {
+func (fb *FilenameBlacklist) IsBlacklisted(filename string) bool {
 	toCheck := filename
 	if !fb.FullPath {
 		toCheck = filepath.Base(filename)

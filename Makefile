@@ -22,4 +22,24 @@ build-all:
 		-ldflags="-X main.Version=${BUILD_VERSION} -X main.BuildTime=${BUILD_TIME}" \
 		-output="build/${BUILD_NAME}-{{.OS}}-{{.Arch}}" .
 
-.PHONY: build test build-all
+full-test: static-check test
+
+static-check:
+	${GO_EXECUTABLE} get github.com/jgautheron/goconst/cmd/goconst
+	${GO_EXECUTABLE} get github.com/alecthomas/gocyclo
+	#${GO_EXECUTABLE} get github.com/golangci/interfacer
+	${GO_EXECUTABLE} get github.com/walle/lll/cmd/lll
+	${GO_EXECUTABLE} get github.com/mdempsky/unconvert
+	${GO_EXECUTABLE} get mvdan.cc/unparam
+	${GO_EXECUTABLE} get honnef.co/go/tools/cmd/staticcheck
+	${GOPATH}/bin/staticcheck ./...
+	${GOPATH}/bin/unparam -tests=false ./...
+	${GOPATH}/bin/unconvert ./...
+	${GOPATH}/bin/lll -g -l 140
+	#interfacer ${LIST_OF_FILES}
+	@test "`/usr/local/go/bin/gofmt -l -s . |wc -l`" = "0" \
+		|| { echo Check fmt for files:; /usr/local/go/bin/gofmt -l -s .; exit 1; }
+	${GOPATH}/bin/gocyclo -over 10 -avg .
+	${GOPATH}/bin/goconst -min-occurrences 3 -min-length 3 -ignore-tests .
+
+.PHONY: build test build-all full-test

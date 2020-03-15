@@ -28,7 +28,7 @@ extra_info_replacements:
     match: "(?i)(hevc|x|H)[. ]?26[45]"
     is_regex: true
   - replacement: ""
-    match: "(?i)(AAC|DDP)[ ]*[25][. ][01]"
+    match: "(?i)((AAC|DD)[ +P]*[25][. ][01]|AAC)"
     is_regex: true
   - replacement: ""
     match: "(?i)(xViD|READNFO|AMZN|HBO|propher|repack)"
@@ -62,7 +62,8 @@ seriesname_replacements:
 # [{is_regex: true, match: ".*sample.*"}, {is_regex: false, match: "sample"}]
 filename_blacklist:
   - is_regex: true
-    match: ".*sample.*"
+    match: "(?i)sample"
+    full_path: true    
   - is_regex: true
     match: "(?i)(.*[.-]HUN[.-]*)"
     full_path: true

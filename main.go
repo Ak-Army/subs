@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/Ak-Army/cli"
@@ -8,12 +9,12 @@ import (
 )
 
 func main() {
-	c := cli.New("subs", "1.0.0")
+	c := cli.New("subs", fmt.Sprintf("%s, build time: %s", Version, BuildTime))
 	c.Authors = []string{"authors goes here"}
 	c.Add(
-		&cmd.Download{
-			ConfigPath: "config.yml",
-		})
+		cmd.NewDownload("config.yml"),
+		cmd.NewSeason("config.yml"),
+	)
 	c.SetDefault("download")
 	c.Run(os.Args)
 }

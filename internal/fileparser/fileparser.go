@@ -1,4 +1,4 @@
-package internal
+package fileparser
 
 import (
 	"encoding/json"
@@ -9,30 +9,9 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/xlog"
 )
-
-type FileParser struct {
-	FilenamePatterns             []string
-	SeriesnameYearPattern        string
-	ExtraInfoPattern             string
-	SeriesnameReplacements       []*Replacements
-	ReleasegroupInfoReplacements []*Replacements
-	ExtraInfoReplacements        []*Replacements
-	ExtensionPattern             string
-	EpisodeNumber                string
-	Logger                       xlog.Logger
-}
-
-type SeriesParams struct {
-	Path          string
-	Name          string
-	SeasonNumber  string
-	EpisodeNumber string
-	ExtraInfo     string
-	ReleaseGroup  string
-	Year          string
-}
 
 const QuickUrlTvmaze string = "http://api.tvmaze.com/singlesearch/shows?q="
 const QuickUrlTvdb string = "http://thetvdb.com/api/GetSeries.php?seriesname="
@@ -56,7 +35,12 @@ func init() {
 	}
 }
 
-func (fp FileParser) Parse(files []string) []*SeriesParams {
+type FileParser struct {
+	*config.Config
+	Logger xlog.Logger
+}
+
+func (fp FileParser) Parse(files []string, basePath string) []*SeriesParams {
 	var ret []*SeriesParams
 	var patterns []*regexp.Regexp
 	for _, p := range fp.FilenamePatterns {
@@ -71,48 +55,43 @@ func (fp FileParser) Parse(files []string) []*SeriesParams {
 		f := filepath.Base(path)
 		for _, p := range patterns {
 			if namedGroups := fp.matchWithGroup(p, f); len(namedGroups) > 0 {
-				fp.Logger.Info("# Processing file: ", f)
+				fp.Logger.Infof("Processing file: %s", f)
 				episodeNumber := fp.episodeNumber(namedGroups)
 				if episodeNumber == "" {
-					fp.Logger.Warn("# Regex does not contain episode number group, should"+
+					fp.Logger.Warn("Regex does not contain episode number group, should"+
 						"contain episodenumber, episodenumber1-9, or"+
-						"episodenumberstart and episodenumberend# Pattern"+
+						"episodenumberstart and episodenumberend Pattern"+
 						"was: ", p.String())
 					break
 				}
 
 				seriesName, year := fp.seriesName(namedGroups)
 				if seriesName == "" {
-					fp.Logger.Warn("# # Regex must contain seriesname. Pattern was: ", p.String())
+					fp.Logger.Warnf("Regex must contain seriesname. Pattern was: %s", p.String())
 					break
 				}
 				seasonNumber := fp.seasonNumber(namedGroups)
 				extraInfo := fp.extraInfo(namedGroups)
 				releaseGroup := fp.releaseGroup(namedGroups)
+				sp := &SeriesParams{
+					BasePath:      basePath,
+					Path:          filepath.Dir(path),
+					SeasonNumber:  seasonNumber,
+					EpisodeNumber: episodeNumber,
+					ExtraInfo:     extraInfo,
+					ReleaseGroup:  releaseGroup,
+					Year:          year,
+				}
 				if realName, err := fp.checkTvMaze(seriesName); err == nil {
-					fp.Logger.Info("Start set sub: ", realName, " ", seasonNumber, "x", episodeNumber, " ", extraInfo, " ", releaseGroup)
-					ret = append(ret, &SeriesParams{
-						Path:          path,
-						Name:          realName,
-						SeasonNumber:  seasonNumber,
-						EpisodeNumber: episodeNumber,
-						ExtraInfo:     extraInfo,
-						ReleaseGroup:  releaseGroup,
-						Year:          year,
-					})
+					fp.Logger.Infof("Found on tvmaze.com: %s %sx%s %s %s", realName, seasonNumber, episodeNumber, extraInfo, releaseGroup)
+					sp.Name = realName
+					ret = append(ret, sp)
 				} else if realName, err := fp.checkTvDB(seriesName); err == nil {
-					fp.Logger.Info("Start set sub: ", realName, " ", seasonNumber, "x", episodeNumber, " ", extraInfo, " ", releaseGroup)
-					ret = append(ret, &SeriesParams{
-						Path:          filepath.Dir(path),
-						Name:          realName,
-						SeasonNumber:  seasonNumber,
-						EpisodeNumber: episodeNumber,
-						ExtraInfo:     extraInfo,
-						ReleaseGroup:  releaseGroup,
-						Year:          year,
-					})
+					fp.Logger.Infof("Found on thetvdb.com: %s %sx%s %s %s", realName, seasonNumber, episodeNumber, extraInfo, releaseGroup)
+					sp.Name = realName
+					ret = append(ret, sp)
 				} else {
-					fp.Logger.Infof("# Not found on www.tvmaze.com and thetvdb.com: %s %s %sx%s", seriesName, year, seasonNumber, episodeNumber)
+					fp.Logger.Infof("Not found on www.tvmaze.com and thetvdb.com:  %sx%s %s %s", seasonNumber, episodeNumber, extraInfo, releaseGroup)
 				}
 				break
 			}
@@ -201,8 +180,6 @@ func (fp FileParser) extraInfo(namedgroups map[string]string) string {
 	}
 	if matchExtra := fp.matchWithGroup(re, s); len(matchExtra) > 0 {
 		s = matchExtra["extra"]
-		//	} else {
-		//		return ""
 	}
 	for _, r := range fp.ExtraInfoReplacements {
 		s = r.Replace(s)

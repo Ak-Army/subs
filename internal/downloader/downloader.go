@@ -1,6 +1,7 @@
 package downloader
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,13 +10,15 @@ import (
 	"strings"
 
 	"github.com/Ak-Army/subs/config"
-	"github.com/Ak-Army/subs/internal"
+	"github.com/Ak-Army/subs/internal/fileparser"
 	"github.com/Ak-Army/xlog"
 	"github.com/mholt/archiver/v3"
 )
 
+var errSubFound = errors.New("subtitle found")
+
 type Downloader interface {
-	Download(sp *internal.SeriesParams) error
+	Download(sp *fileparser.SeriesParams) error
 }
 
 type BaseDownloader struct {
@@ -53,13 +56,13 @@ func (b *BaseDownloader) setCookies(url string) error {
 	}
 	defer res.Body.Close()
 	if res.StatusCode < 200 || res.StatusCode >= 400 {
-		return fmt.Errorf("Status code error: %d %s", res.StatusCode, res.Status)
+		return fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 	b.cookies = res.Cookies()
 	return nil
 }
 
-func (b BaseDownloader) DownloadFile(href string, path string) error {
+func (b BaseDownloader) DownloadFile(href string, sp *fileparser.SeriesParams) error {
 	b.Logger.Info("Download file: ", href)
 	req, err := b.NewRequest("GET", href, nil)
 	if err != nil {
@@ -71,20 +74,28 @@ func (b BaseDownloader) DownloadFile(href string, path string) error {
 	}
 	defer res.Body.Close()
 	if res.StatusCode < 200 || res.StatusCode >= 400 {
-		return fmt.Errorf("Wrong response code:  %d", res.StatusCode)
+		return fmt.Errorf("wrong response code: %d", res.StatusCode)
 	}
-	ext := filepath.Ext(href)
+	ext := strings.Split(filepath.Ext(href), "&")[0]
 	if ext == ".rar" || ext == ".zip" {
-		zip := b.replaceExtension(path, ".zip")
-		b.Logger.Info(zip, " -> ", path)
-		out, err := os.Create(zip)
+		arch := b.replaceExtension(sp.Path, ext)
+		out, err := os.Create(arch)
+		if err != nil {
+			return err
+		}
+		defer os.Remove(arch)
 		_, err = io.Copy(out, res.Body)
 		if err != nil {
 			return err
 		}
-		return b.deCompress(zip, path)
+		return b.deCompress(arch, sp)
 	} else {
+		path := b.replaceExtension(sp.Path, "."+b.Config.LanguageSub+".srt")
 		out, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		defer os.Remove(out.Name())
 		_, err = io.Copy(out, res.Body)
 		if err != nil {
 			return err
@@ -93,32 +104,51 @@ func (b BaseDownloader) DownloadFile(href string, path string) error {
 	return nil
 }
 
-func (b BaseDownloader) GetSrtPath(filename string, path string) string {
-	ext := filepath.Ext(filename)
-	return b.replaceExtension(path, "."+b.Config.LanguageSub+ext)
+func (b BaseDownloader) CheckForDownloaded(sp *fileparser.SeriesParams) bool {
+	f, err := os.Stat(sp.BasePath + b.DecompSuffix)
+	if err != nil {
+		return false
+	}
+	if !f.IsDir() {
+		return false
+	}
+	if err := filepath.Walk(sp.BasePath+b.DecompSuffix, func(p string, f os.FileInfo, err error) error {
+		b.Logger.Debug(p, " - ", sp.Path)
+		if filepath.Ext(f.Name()) == ".srt" {
+			if err := os.Rename(p, sp.Path); err != nil {
+				return err
+			}
+			return errSubFound
+		}
+		return nil
+	}); err == errSubFound {
+		return true
+	}
+	return false
 }
 
 func (b BaseDownloader) replaceExtension(path string, ext string) string {
 	return strings.TrimSuffix(path, filepath.Ext(path)) + ext
 }
 
-func (b BaseDownloader) deCompress(source string, destination string) error {
-	destDir := destination + "_decomp"
+func (b BaseDownloader) deCompress(source string, sp *fileparser.SeriesParams) error {
+	destDir := sp.Path + b.DecompSuffix
+	if !b.Config.Season {
+		destDir = sp.BasePath + b.DecompSuffix
+	}
 	if err := archiver.Unarchive(source, destDir); err != nil {
 		return err
 	}
-	defer os.Remove(source)
 
-	filepath.Walk(destDir, func(p string, f os.FileInfo, err error) error {
-		b.Logger.Debug(p, " - ", destDir)
-		if f.IsDir() && p != destDir {
-			return filepath.SkipDir
-		}
+	filepath.Walk(source, func(p string, f os.FileInfo, err error) error {
+		b.Logger.Debug(p, " - ", sp.Path)
 		if filepath.Ext(f.Name()) == ".srt" {
-			return os.Rename(p, destination)
+			return os.Rename(p, sp.Path)
 		}
-
 		return nil
 	})
-	return os.RemoveAll(destDir)
+	if !b.Config.Season {
+		return os.RemoveAll(destDir)
+	}
+	return nil
 }
