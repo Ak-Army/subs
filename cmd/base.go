@@ -44,7 +44,6 @@ func (b *base) init() {
 		if err != nil {
 			xlog.Fatal(err)
 		}
-		defer file.Close()
 		b.log = xlog.New(xlog.Config{
 			Output: xlog.MultiOutput{
 				xlog.LevelOutput{

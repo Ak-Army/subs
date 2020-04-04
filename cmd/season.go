@@ -61,7 +61,9 @@ func (s *Season) Run() {
 		}
 		f, err := os.Stat(f + s.config.DecompSuffix)
 		if err == nil {
-			os.Remove(f.Name())
+			if err := os.Remove(f.Name()); err != nil {
+				s.log.Error(err)
+			}
 		}
 	}
 }
