@@ -42,7 +42,7 @@ func (ff *FileFinder) Find(path string) ([]string, error) {
 }
 
 func (ff *FileFinder) check(p string, f os.FileInfo) bool {
-	return ff.checkExtension(f.Name()) && ff.checkBlacklist(p) && ff.checkSrt(p)
+	return ff.checkExtension(f.Name()) && ff.checkBlacklist(p) && ff.checkSrt(p) && ff.checkMkvSub(p)
 }
 
 func (ff *FileFinder) checkExtension(name string) bool {
@@ -64,9 +64,16 @@ func (ff *FileFinder) checkBlacklist(name string) bool {
 }
 
 func (ff *FileFinder) checkSrt(p string) bool {
-	info, err := os.Stat(strings.TrimSuffix(p, filepath.Ext(p)) + "." + ff.LanguageSub + ".srt")
+	info, err := os.Stat(strings.TrimSuffix(p, filepath.Ext(p))+"."+ff.LanguageSub+".srt")
 	if os.IsNotExist(err) {
 		return true
 	}
 	return info.IsDir()
+}
+
+func (ff *FileFinder) checkMkvSub(name string) bool {
+	if config.MkvSub(name) {
+		return false
+	}
+	return true
 }
