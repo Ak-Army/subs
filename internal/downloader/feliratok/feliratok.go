@@ -20,9 +20,6 @@ type Feliratok struct {
 func (f *Feliratok) Download(sp *fileparser.SeriesParams) error {
 	if f.Config.Season {
 		f.Logger.Info("Searching for subtitle: ", sp.Name, " Season ", strings.TrimLeft(sp.SeasonNumber, "0"))
-		if f.CheckForDownloaded(sp) {
-			return nil
-		}
 	} else {
 		f.Logger.Info("Searching for subtitle: ", sp.Name, " ", strings.TrimLeft(sp.SeasonNumber, "0"), "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	}
