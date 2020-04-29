@@ -50,26 +50,37 @@ func (s *Season) Run() {
 			Config: s.config,
 			Logger: s.log,
 		}
-		for _, sf := range fileParser.Parse(files, f) {
-			for _, dl := range downloaders {
-				if err := dl.Download(sf); err != nil {
-					s.log.Error(err)
-					continue
+		for i, sf := range fileParser.Parse(files, f) {
+			if i == 0 {
+				for _, dl := range downloaders {
+					if err := dl.Download(sf); err != nil {
+						s.log.Error(err)
+					}
 				}
+			}
+			cf := downloader.BaseDownloader{
+				Config: s.config,
+				Logger: s.log,
+			}
+			di, err := os.Stat(f + s.config.DecompSuffix)
+			if err != nil {
+				s.log.Error(err)
 				break
 			}
-		}
-		f, err := os.Stat(f + s.config.DecompSuffix)
-		if err == nil {
-			if err := os.Remove(f.Name()); err != nil {
-				s.log.Error(err)
+			if di.IsDir() {
+				if cf.CheckForDownloaded(sf) {
+					s.log.Info("Found subtitle: " + sf.Name + " " + sf.SeasonNumber + "x" + sf.EpisodeNumber)
+				}
 			}
+		}
+		if err := os.RemoveAll(f + s.config.DecompSuffix); err != nil {
+			s.log.Error(err)
 		}
 	}
 }
 
 func (s *Season) Samples() []string {
-	return []string{"subs download -log /videoFolders"}
+	return []string{"subs season -log /videoFolders"}
 }
 
 func (s *Season) setConfig() []downloader.Downloader {
