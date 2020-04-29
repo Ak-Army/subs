@@ -75,7 +75,7 @@ func (fp FileParser) Parse(files []string, basePath string) []*SeriesParams {
 				releaseGroup := fp.releaseGroup(namedGroups)
 				sp := &SeriesParams{
 					BasePath:      basePath,
-					Path:          filepath.Dir(path),
+					Path:          path,
 					SeasonNumber:  seasonNumber,
 					EpisodeNumber: episodeNumber,
 					ExtraInfo:     extraInfo,
