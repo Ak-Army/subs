@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"regexp"
 
 	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/subs/internal/fileparser"
@@ -62,7 +63,7 @@ func (b *BaseDownloader) setCookies(url string) error {
 	return nil
 }
 
-func (b BaseDownloader) DownloadFile(href string, sp *fileparser.SeriesParams) error {
+func (b *BaseDownloader) DownloadFile(href string, sp *fileparser.SeriesParams) error {
 	b.Logger.Info("Download file: ", href)
 	req, err := b.NewRequest("GET", href, nil)
 	if err != nil {
@@ -95,7 +96,6 @@ func (b BaseDownloader) DownloadFile(href string, sp *fileparser.SeriesParams) e
 		if err != nil {
 			return err
 		}
-		defer os.Remove(out.Name())
 		_, err = io.Copy(out, res.Body)
 		if err != nil {
 			return err
@@ -104,7 +104,7 @@ func (b BaseDownloader) DownloadFile(href string, sp *fileparser.SeriesParams) e
 	return nil
 }
 
-func (b BaseDownloader) CheckForDownloaded(sp *fileparser.SeriesParams) bool {
+func (b *BaseDownloader) CheckForDownloaded(sp *fileparser.SeriesParams) bool {
 	f, err := os.Stat(sp.BasePath + b.DecompSuffix)
 	if err != nil {
 		return false
@@ -115,10 +115,12 @@ func (b BaseDownloader) CheckForDownloaded(sp *fileparser.SeriesParams) bool {
 	if err := filepath.Walk(sp.BasePath+b.DecompSuffix, func(p string, f os.FileInfo, err error) error {
 		b.Logger.Debug(p, " - ", sp.Path)
 		if filepath.Ext(f.Name()) == ".srt" {
-			if err := os.Rename(p, sp.Path); err != nil {
-				return err
+			if b.Find("[E|x]"+sp.EpisodeNumber+".*"+sp.ExtraInfo+".*"+sp.ReleaseGroup, p) {
+				if err := os.Rename(p, b.GetSrtPath(sp.Path)); err != nil {
+					return err
+				}
+				return errSubFound
 			}
-			return errSubFound
 		}
 		return nil
 	}); err == errSubFound {
@@ -127,27 +129,59 @@ func (b BaseDownloader) CheckForDownloaded(sp *fileparser.SeriesParams) bool {
 	return false
 }
 
-func (b BaseDownloader) replaceExtension(path string, ext string) string {
+func (b *BaseDownloader) GetSrtPath(path string) string {
+	return b.replaceExtension(path, "."+b.Config.LanguageSub+".srt")
+}
+
+func (b *BaseDownloader) Find(match string, s string) bool {
+	re, err := regexp.MatchString(strings.ToLower(match), strings.ToLower(s))
+	if err != nil {
+		return false
+	}
+	if re {
+		return true
+	}
+	return false
+}
+
+func (b *BaseDownloader) replaceExtension(path string, ext string) string {
 	return strings.TrimSuffix(path, filepath.Ext(path)) + ext
 }
 
-func (b BaseDownloader) deCompress(source string, sp *fileparser.SeriesParams) error {
+func (b *BaseDownloader) deCompress(source string, sp *fileparser.SeriesParams) error {
 	destDir := sp.Path + b.DecompSuffix
-	if !b.Config.Season {
+	if b.Config.Season {
 		destDir = sp.BasePath + b.DecompSuffix
 	}
-	if err := archiver.Unarchive(source, destDir); err != nil {
-		return err
-	}
-
-	filepath.Walk(source, func(p string, f os.FileInfo, err error) error {
-		b.Logger.Debug(p, " - ", sp.Path)
-		if filepath.Ext(f.Name()) == ".srt" {
-			return os.Rename(p, sp.Path)
+	ext := filepath.Ext(source)
+	if ext == ".zip" {
+		z := archiver.Zip{
+			OverwriteExisting: true,
 		}
+		defer z.Close()
+		if err := z.Unarchive(source, destDir); err != nil {
+			return err
+		}
+	} else if ext == ".rar" {
+		r := archiver.Rar{
+			OverwriteExisting: true,
+		}
+		defer r.Close()
+		if err := r.Unarchive(source, destDir); err != nil {
+			return err
+		}
+	} else {
+		b.Logger.Error("Unsupported compressed file ", source)
 		return nil
-	})
+	}
 	if !b.Config.Season {
+		filepath.Walk(destDir, func(p string, f os.FileInfo, err error) error {
+			b.Logger.Debug(p, " - ", sp.Path)
+			if filepath.Ext(f.Name()) == ".srt" {
+				return os.Rename(p, b.GetSrtPath(sp.Path))
+			}
+			return nil
+		})
 		return os.RemoveAll(destDir)
 	}
 	return nil
