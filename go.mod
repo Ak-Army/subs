@@ -9,6 +9,8 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/mitchellh/iochan v1.0.0 // indirect
+	github.com/quadrifoglio/go-mkv v0.0.0-20180620161916-e7a1fc70199c
+	github.com/remko/go-mkvparse v0.0.0-20190519181556-e343daff3525
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/yaml.v2 v2.2.7
 )

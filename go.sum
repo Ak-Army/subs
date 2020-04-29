@@ -54,6 +54,10 @@ github.com/pierrec/lz4 v2.0.5+incompatible h1:2xWsjqPFWcplujydGg4WmhC/6fZqK42wMM
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/quadrifoglio/go-mkv v0.0.0-20180620161916-e7a1fc70199c h1:Nu1I2o5Lk5nvn2RChPOJ1MzTXKZoHiy665a5aANHssQ=
+github.com/quadrifoglio/go-mkv v0.0.0-20180620161916-e7a1fc70199c/go.mod h1:Mtv+LuzkLR5r7fwBlvqI/N/5d4nOaH/7fpgQFXwxnFk=
+github.com/remko/go-mkvparse v0.0.0-20190519181556-e343daff3525 h1:0nJMtuXsNY0bDjN+RVnmLaTzfmYrwTn2j9ssizoA4Tw=
+github.com/remko/go-mkvparse v0.0.0-20190519181556-e343daff3525/go.mod h1:0gW1dLpnSYYsFa6Ddu3eSpNm0WDp5lLiy9Rl4Ke9P8w=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.5.2/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
 github.com/rs/xid v1.2.1 h1:mhH9Nq+C1fY2l1XIpgxIiUOfNpRBYH1kKcr+qfKgjRc=
