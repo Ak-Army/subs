@@ -20,9 +20,6 @@ type Hosszupuska struct {
 func (h *Hosszupuska) Download(sp *fileparser.SeriesParams) error {
 	if h.Config.Season {
 		h.Logger.Info("Searching for subtitle: ", sp.Name, " Season ", sp.SeasonNumber)
-		if h.CheckForDownloaded(sp) {
-			return nil
-		}
 	} else {
 		h.Logger.Info("Searching for subtitle: ", sp.Name, " ", sp.SeasonNumber, "x", sp.EpisodeNumber, " ", sp.ExtraInfo, "-", sp.ReleaseGroup)
 	}
