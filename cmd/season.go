@@ -50,31 +50,24 @@ func (s *Season) Run() {
 			Config: s.config,
 			Logger: s.log,
 		}
-		for i, sf := range fileParser.Parse(files, f) {
-			if i == 0 {
-				for _, dl := range downloaders {
-					if err := dl.Download(sf); err != nil {
-						s.log.Error(err)
-					}
+		for _, sf := range fileParser.Parse(files, f) {
+			for _, dl := range downloaders {
+				if dl.CheckForDownloaded(sf) {
+					s.log.Info("Found subtitle: " + sf.Name + " " + sf.SeasonNumber + "x" + sf.EpisodeNumber)
+					break
 				}
-			}
-			cf := downloader.BaseDownloader{
-				Config: s.config,
-				Logger: s.log,
-			}
-			di, err := os.Stat(f + s.config.DecompSuffix)
-			if err != nil {
-				s.log.Error(err)
+				if err := dl.Download(sf); err != nil {
+					s.log.Error(err)
+					continue
+				}
 				break
 			}
-			if di.IsDir() {
-				if cf.CheckForDownloaded(sf) {
-					s.log.Info("Found subtitle: " + sf.Name + " " + sf.SeasonNumber + "x" + sf.EpisodeNumber)
-				}
-			}
 		}
-		if err := os.RemoveAll(f + s.config.DecompSuffix); err != nil {
-			s.log.Error(err)
+		f, err := os.Stat(f + s.config.DecompSuffix)
+		if err == nil {
+			if err := os.RemoveAll(f.Name()); err != nil {
+				s.log.Error(err)
+			}
 		}
 	}
 }
