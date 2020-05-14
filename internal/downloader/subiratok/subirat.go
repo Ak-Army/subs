@@ -42,7 +42,7 @@ func (s *Subiratok) Download(sp *fileparser.SeriesParams) error {
 	}
 
 	b, _ := ioutil.ReadAll(res.Body)
-	//s.Logger.Debug("response: ", string(b))
+	// s.Logger.Debug("response: ", string(b))
 
 	// Load the HTML document
 	rss := struct {

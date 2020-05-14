@@ -5,8 +5,9 @@ import (
 	"path"
 
 	"github.com/Ak-Army/cli"
-	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/xlog"
+
+	"github.com/Ak-Army/subs/config"
 )
 
 const DefDir string = "."

@@ -9,8 +9,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/xlog"
+
+	"github.com/Ak-Army/subs/config"
 )
 
 const QuickUrlTvmaze string = "http://api.tvmaze.com/singlesearch/shows?q="

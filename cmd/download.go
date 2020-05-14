@@ -3,13 +3,14 @@ package cmd
 import (
 	"strings"
 
+	"gopkg.in/gomail.v2"
+
 	"github.com/Ak-Army/subs/internal/downloader"
 	"github.com/Ak-Army/subs/internal/downloader/feliratok"
 	"github.com/Ak-Army/subs/internal/downloader/hosszupuska"
 	"github.com/Ak-Army/subs/internal/downloader/subiratok"
 	"github.com/Ak-Army/subs/internal/filefinder"
 	"github.com/Ak-Army/subs/internal/fileparser"
-	"gopkg.in/gomail.v2"
 )
 
 type Download struct {

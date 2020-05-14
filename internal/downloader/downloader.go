@@ -7,19 +7,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
+
+	"github.com/Ak-Army/xlog"
+	"github.com/mholt/archiver/v3"
 
 	"github.com/Ak-Army/subs/config"
 	"github.com/Ak-Army/subs/internal/fileparser"
-	"github.com/Ak-Army/xlog"
-	"github.com/mholt/archiver/v3"
 )
 
 var errSubFound = errors.New("subtitle found")
 
 type Downloader interface {
 	Download(sp *fileparser.SeriesParams) error
+	CheckForDownloaded(sp *fileparser.SeriesParams) bool
 }
 
 type BaseDownloader struct {

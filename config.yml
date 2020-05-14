@@ -1,7 +1,7 @@
 valid_extensions:
-- ".avi"
-- ".mkv"
-- ".mp4"
+  - ".avi"
+  - ".mkv"
+  - ".mp4"
 
 # Log
 log: false
@@ -50,7 +50,7 @@ releasegroup_info_replacements:
   - replacement: ""
     match: "[(\\[].*[)\\]]"
     is_regex: true
-  
+
 # A The Bridge sorozat miatt kell hogy a US vegzodest toroljuk mert nem ismeri fel a sorozatos oldal
 # Ha elrontanak a fajl nevet es a sorozat neveben bennemaradnak akkor ezeket torolni kell.
 seriesname_replacements:
@@ -63,7 +63,7 @@ seriesname_replacements:
 filename_blacklist:
   - is_regex: true
     match: "(?i)sample"
-    full_path: true    
+    full_path: true
   - is_regex: true
     match: "(?i)(.*[.-]HUN[.-]*)"
     full_path: true

@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
+
 	"github.com/Ak-Army/subs/internal/downloader"
 	"github.com/Ak-Army/subs/internal/fileparser"
-	"github.com/PuerkitoBio/goquery"
 )
 
 const Url string = "https://www.feliratok.info"

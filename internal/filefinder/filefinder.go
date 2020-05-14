@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Ak-Army/subs/config"
+	"github.com/Ak-Army/subs/internal/mkv"
 )
 
 type FileFinder struct {
@@ -64,7 +65,7 @@ func (ff *FileFinder) checkBlacklist(name string) bool {
 }
 
 func (ff *FileFinder) checkSrt(p string) bool {
-	info, err := os.Stat(strings.TrimSuffix(p, filepath.Ext(p))+"."+ff.LanguageSub+".srt")
+	info, err := os.Stat(strings.TrimSuffix(p, filepath.Ext(p)) + "." + ff.LanguageSub + ".srt")
 	if os.IsNotExist(err) {
 		return true
 	}
@@ -72,7 +73,7 @@ func (ff *FileFinder) checkSrt(p string) bool {
 }
 
 func (ff *FileFinder) checkMkvSub(name string) bool {
-	if config.MkvSub(name) {
+	if mkv.HaveSub(name) {
 		return false
 	}
 	return true
