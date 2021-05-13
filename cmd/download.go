@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"strings"
 
+	"github.com/Ak-Army/cli"
 	"gopkg.in/gomail.v2"
 
 	"github.com/Ak-Army/subs/internal/downloader"
@@ -13,8 +15,16 @@ import (
 	"github.com/Ak-Army/subs/internal/fileparser"
 )
 
+func init() {
+	cli.RootCommand().AddCommand("download", &Download{
+		base: base{
+			ConfigPath: "config.yml",
+		},
+	})
+}
+
 type Download struct {
-	*base
+	base
 
 	Email          bool `flag:"email, Send email"`
 	Subirat        bool `flag:"subirat, Search and download subtitle subirat.net"`
@@ -23,20 +33,21 @@ type Download struct {
 	Recursive      bool `flag:"recursive, Descend more than one level directories supplied as arguments"`
 }
 
-func NewDownload(configPath string) *Download {
-	return &Download{
-		base: &base{
-			ConfigPath: configPath,
-		},
-	}
+func (d *Download) Help() string {
+	return `
+Usage: subs download [command options]
+Sample: subs download -log /videoFolders
+`
 }
 
-func (d *Download) Desc() string {
+func (d *Download) Synopsis() string {
 	return "Download subtitles."
 }
 
-func (d *Download) Run() {
-	d.base.init()
+func (d *Download) Run(_ context.Context) error {
+	if err := d.base.init(); err != nil {
+		return err
+	}
 	downloaders := d.setConfig()
 
 	d.log.Debugf("Config: %+v", d.config)
@@ -69,6 +80,7 @@ func (d *Download) Run() {
 		}
 	}
 	d.sendEmail(mess)
+	return nil
 }
 
 func (d *Download) sendEmail(mess []string) {
@@ -83,10 +95,6 @@ func (d *Download) sendEmail(mess []string) {
 			d.log.Error("Unable to send email", err)
 		}
 	}
-}
-
-func (d *Download) Samples() []string {
-	return []string{"subs download -log /videoFolders"}
 }
 
 func (d *Download) setConfig() []downloader.Downloader {

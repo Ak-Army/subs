@@ -197,7 +197,7 @@ func (fp FileParser) checkTvMaze(name string) (string, error) {
 	if res.StatusCode < 200 || res.StatusCode >= 400 {
 		return "", fmt.Errorf("not found")
 	}
-	fp.Logger.Debug("response", res.Body)
+	// fp.Logger.Debug("response", res.Body)
 	result := &struct {
 		RealName string `json:"name"`
 	}{}

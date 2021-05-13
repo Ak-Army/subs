@@ -1,21 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/Ak-Army/cli"
+	"github.com/Ak-Army/cli/command"
 
-	"github.com/Ak-Army/subs/cmd"
+	_ "github.com/Ak-Army/subs/cmd"
 )
 
 func main() {
 	c := cli.New("subs", fmt.Sprintf("%s, build time: %s", Version, BuildTime))
-	c.Authors = []string{"authors goes here"}
-	c.Add(
-		cmd.NewDownload("config.yml"),
-		cmd.NewSeason("config.yml"),
-	)
+	cli.RootCommand().Authors = []string{"authors goes here"}
+	cli.RootCommand().AddCommand("completion", &command.Completion{})
 	c.SetDefault("download")
-	c.Run(os.Args)
+	c.Run(context.Background(), os.Args)
 }

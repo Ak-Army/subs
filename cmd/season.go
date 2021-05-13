@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"os"
 
+	"github.com/Ak-Army/cli"
 	"github.com/Ak-Army/subs/internal/downloader"
 	"github.com/Ak-Army/subs/internal/downloader/feliratok"
 	"github.com/Ak-Army/subs/internal/downloader/hosszupuska"
@@ -10,27 +12,37 @@ import (
 	"github.com/Ak-Army/subs/internal/fileparser"
 )
 
-func NewSeason(configPath string) *Season {
-	return &Season{
-		base: &base{
-			ConfigPath: configPath,
+func init() {
+	cli.RootCommand().AddCommand("season", &Season{
+		base: base{
+			ConfigPath: "config.yml",
 		},
-	}
+	})
 }
 
 type Season struct {
-	*base
+	base
 
 	Feliratok      bool `flag:"feliratok, Search and download subtitle feliratok.info"`
 	Hosszupuskasub bool `flag:"hosszupuskasub, Search and download subtitle hosszupuskasub.com"`
 }
 
-func (s *Season) Desc() string {
+func (s *Season) Help() string {
+	return `
+Usage: subs season [command options]
+Sample: subs season -log /videoFolders
+`
+}
+
+func (s *Season) Synopsis() string {
 	return "Download season subtitles."
 }
 
-func (s *Season) Run() {
+func (s *Season) Run(_ context.Context) error {
 	s.base.init()
+	if err := s.base.init(); err != nil {
+		return err
+	}
 	downloaders := s.setConfig()
 
 	s.log.Debugf("Config: %+v", s.config)
@@ -70,10 +82,7 @@ func (s *Season) Run() {
 			}
 		}
 	}
-}
-
-func (s *Season) Samples() []string {
-	return []string{"subs season -log /videoFolders"}
+	return nil
 }
 
 func (s *Season) setConfig() []downloader.Downloader {
