@@ -1,5 +1,7 @@
 github.com/Ak-Army/cli v1.0.1-0.20210130151027-06d3e7759fba h1:mU/tN3JXvsvow3WV7/T8D9zwpmsdVMVdIXWtnpNUuNE=
 github.com/Ak-Army/cli v1.0.1-0.20210130151027-06d3e7759fba/go.mod h1:HWs0J7PaEB7PcpDFH4wwLp5qk5xZMUUMK1msHJsR2Xw=
+github.com/Ak-Army/gox v0.3.0 h1:QFPUOz2JZODY/+t6doNV6Rj95kAI4HRcrlLrxlImKtk=
+github.com/Ak-Army/gox v0.3.0/go.mod h1:awAfmBhkKAAhguwkn7twZ1M4+Az14mdAds08KPwkQiM=
 github.com/Ak-Army/xlog v1.2.0 h1:cwkuOYvvUq6Jv42v6m0NpjJkqUgd+npyYqscEfty1tk=
 github.com/Ak-Army/xlog v1.2.0/go.mod h1:wM9diko07S4npnaFJyT9ns9WgBGeGyPJBdvnYD4HD04=
 github.com/PuerkitoBio/goquery v1.5.0 h1:uGvmFXOA73IKluu/F84Xd1tt/z07GYm8X49XKHP7EJk=
@@ -37,6 +39,8 @@ github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=
 github.com/mholt/archiver/v3 v3.3.0 h1:vWjhY8SQp5yzM9P6OJ/eZEkmi3UAbRrxCq48MxjAzig=
 github.com/mholt/archiver/v3 v3.3.0/go.mod h1:YnQtqsp+94Rwd0D/rk5cnLrxusUBUXg+08Ebtr1Mqao=
+github.com/mitchellh/iochan v1.0.0 h1:C+X3KsSTLFVBr/tK1eYN/vs4rJcvsiLU338UhYPJWeY=
+github.com/mitchellh/iochan v1.0.0/go.mod h1:JwYml1nuB7xOzsp52dPpHFffvOCDupsG0QubkSMEySY=
 github.com/nwaples/rardecode v1.0.0 h1:r7vGuS5akxOnR4JQSkko62RJ1ReCMXxQRPtxsiFMBOs=
 github.com/nwaples/rardecode v1.0.0/go.mod h1:5DzqNKiOdpKKBH87u8VlvAnPZMXcGRhxWkRpHbbfGS0=
 github.com/pierrec/lz4 v2.0.5+incompatible h1:2xWsjqPFWcplujydGg4WmhC/6fZqK42wMM8aXeqhl0I=

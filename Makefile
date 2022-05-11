@@ -17,7 +17,7 @@ test:
 	${GO_EXECUTABLE} test -race -cover -bench . ${LIST_OF_FILES}
 
 build-all:
-	${GO_EXECUTABLE} install github.com/Ak-Army/gox
+	${GO_EXECUTABLE} get github.com/Ak-Army/gox
 	${GOPATH}/bin/gox -verbose \
 		-ldflags="-X main.Version=${BUILD_VERSION} -X main.BuildTime=${BUILD_TIME}" \
 		-output="build/${BUILD_NAME}-{{.OS}}-{{.Arch}}" .

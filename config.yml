@@ -4,7 +4,7 @@ valid_extensions:
   - ".mp4"
 
 # Log
-log: false
+log: true
 
 # Email
 email: false
@@ -17,10 +17,10 @@ email_smtp_port: 587
 
 # Melyik feliratos oldalt vizsgaljuk
 dl_subirat: true
-dl_feliratok: true
-dl_hosszupuskasub: true
+dl_feliratok: false
+dl_hosszupuskasub: false
 
-recursive: false
+recursive: true
 
 # Miutan szetbontottuk a fajl nevet akkor ezeket a dolgokat csereljuk a kulonbozo reszekben.
 extra_info_replacements:

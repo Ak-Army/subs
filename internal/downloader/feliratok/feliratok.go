@@ -12,7 +12,7 @@ import (
 	"github.com/Ak-Army/subs/internal/fileparser"
 )
 
-const Url string = "https://www.feliratok.info"
+const Url string = "https://www.feliratok.eu"
 
 type Feliratok struct {
 	*downloader.BaseDownloader

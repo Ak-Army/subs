@@ -26,10 +26,12 @@ func (s *Subiratok) Download(sp *fileparser.SeriesParams) error {
 		return err
 	}
 	title := strings.ReplaceAll(
+                strings.ReplaceAll(
 		strings.ReplaceAll(
 			strings.ToLower(sp.Name),
 			" ", "-"),
-		"'", "")
+		"'", ""),
+                ":", "")
 	req.URL.Path = fmt.Sprintf("/t/%s/rss", title)
 
 	res, err := http.DefaultClient.Do(req)
